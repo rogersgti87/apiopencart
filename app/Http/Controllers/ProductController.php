@@ -98,7 +98,7 @@ class ProductController extends Controller
         $extension == '.jpg';
     }
 
-    $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
+    $image = str_replace('data:image/'.$extension.';base64,', '', $data['image']);
     $image = str_replace(' ', '+', $image);
     $imageName = Str::slug($data['name']) . $extension;
         if(isset($data['path_image'])){
@@ -161,7 +161,7 @@ class ProductController extends Controller
 		if (isset($data['product_image'])) {
 			foreach ($data['product_image'] as $key => $product_image) {
 
-                $extension = explode('/', mime_content_type($data['image']))[1];
+                $extension = explode('/', mime_content_type($product->image))[1];
 
                 if($extension == 'jpeg'){
                     $extension == '.jpg';
@@ -173,7 +173,7 @@ class ProductController extends Controller
                     $extension == '.jpg';
                 }
 
-                $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
+                $image = str_replace('data:image/'.$extension.';base64,', '', $product->image);
                 $image = str_replace(' ', '+', $image);
                 $imageName = Str::slug($data['name'].$key) . $extension;
                     if(isset($data['path_image'])){
