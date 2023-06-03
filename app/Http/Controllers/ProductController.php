@@ -24,8 +24,106 @@ class ProductController extends Controller
     public function index()
     {
 
+        $columns = [
+            //Columns Table oc_product
+            'p.product_id as p_product_id','p.model as p_model','p.sku as p_sku',
+            'p.upc as p_upc','p.ean as p_ean','p.jan as p_jan','p.isbn as p_isbn',
+            'p.mpn as p_mpn','p.location as p_location','p.quantity as p_quantity',
+            'p.stock_status_id as p_stock_status_id','p.image as p_image','p.manufacturer_id as p_manufacturer_id',
+            'p.shipping as p_shipping','p.price as p_price','p.points as p_points','p.tax_class_id as p_tax_class_id',
+            'p.date_available as p_date_available','p.weight as p_weight','p.weight_class_id as p_weight_class_id',
+            'p.length as p_length','p.width as p_width','p.height as p_height','p.length_class_id as p_length_class_id',
+            'p.subtract as p_subtract','p.minimum as p_minimum','p.sort_order as p_sort_order',
+            'p.status as p_status','p.viewed as p_viewed','p.date_added as p_date_added','p.date_modified as p_date_modified',
+            //Columns table oc_product_description
+            'pd.product_id as pd_product_id','pd.language_id as pd_language_id','pd.name as pd_name',
+            'pd.description as pd_description','pd.tag as pd_tag','pd.meta_title as pd_meta_title',
+            'pd.meta_description as pd_meta_description','pd.meta_keyword as pd_meta_keyword',
+            //Columns table oc_product_image
+            'pi.product_image_id as pi_product_image_id','pi.product_id as pi_product_id','pi.image as pi_image',
+            'pi.sort_order as pi_sort_order',
+            //Columns table oc_product_special
+            'ps.product_special_id as ps_product_special_id','ps.product_id as ps_product_id',
+            'ps.customer_group_id as ps_customer_group_id','ps.priority as ps_priority','ps.price as ps_price',
+            'ps.date_start as ps_date_start','ps.date_end as ps_date_end'
+        ];
+
+        $data  = DB::table('oc_product as p')
+                        ->select($columns)
+                        ->join('oc_product_description as pd','p.product_id','pd.product_id')
+                        ->leftjoin('oc_product_image as pi','p.product_id','pi.product_id')
+                        ->leftjoin('oc_product_special as ps','p.product_id','ps.product_id')
+                        ->paginate(20);
+
+        $data = $data->toArray();
+
+        foreach($data['data'] as $key => $result){
+
+            $data['data'][$key] = [
+                'product'  =>  [
+                    'product_id'            => $result->p_product_id,
+                    'model'                 => $result->p_model,
+                    'sku'                   => $result->p_sku,
+                    'upc'                   => $result->p_upc,
+                    'ean'                   => $result->p_ean,
+                    'jan'                   => $result->p_jan,
+                    'isbn'                  => $result->p_isbn,
+                    'mpn'                   => $result->p_mpn,
+                    'location'              => $result->p_location,
+                    'quantity'              => $result->p_quantity,
+                    'stock_status_id'       => $result->p_stock_status_id,
+                    'image'                 => $result->p_image,
+                    'manufacturer_id'       => $result->p_manufacturer_id,
+                    'shipping'              => $result->p_shipping,
+                    'price'                 => $result->p_price,
+                    'points'                => $result->p_points,
+                    'tax_class_id'          => $result->p_tax_class_id,
+                    'date_available'        => $result->p_date_available,
+                    'weight'                => $result->p_weight,
+                    'weight_class_id'       => $result->p_weight_class_id,
+                    'length'                => $result->p_length,
+                    'width'                 => $result->p_width,
+                    'height'                => $result->p_height,
+                    'length_class_id'       => $result->p_length_class_id,
+                    'subtract'              => $result->p_subtract,
+                    'minimum'               => $result->p_minimum,
+                    'status'                => $result->p_status,
+                    'viewed'                => $result->p_viewed,
+                    'date_added'            => $result->p_date_added,
+                    'date_modified'         => $result->p_date_modified
+                ],
+                'product_description'  =>  [
+                    'product_id'            => $result->pd_product_id,
+                    'language_id'           => $result->pd_language_id,
+                    'name'                  => $result->pd_name,
+                    'description'           => $result->pd_description,
+                    'tag'                   => $result->pd_tag,
+                    'meta_title'            => $result->pd_meta_title,
+                    'meta_description'      => $result->pd_meta_description,
+                    'meta_keyword'          => $result->pd_meta_keyword
+                ],
+                'product_image'       =>  [
+                    'product_image_id'      => $result->pi_product_image_id,
+                    'product_id'            => $result->pi_product_id,
+                    'image'                 => $result->pi_image,
+                    'sort_order'            => $result->pi_sort_order
+                ],
+                'product_special'       =>  [
+                    'product_special_id'    => $result->ps_product_special_id,
+                    'customer_group_id'     => $result->ps_customer_group_id,
+                    'priority'              => $result->ps_priority,
+                    'price'                 => $result->ps_price,
+                    'date_start'            => $result->ps_date_start,
+                    'date_end'              => $result->ps_date_end
+                ]
+
+            ];
+
+        }
 
         return response()->json($data, 200);
+
+
     }
 
 
@@ -208,10 +306,10 @@ class ProductController extends Controller
 
 
 		if (isset($data['product_category'])) {
-			foreach ($data['product_category'] as $category_id) {
+			foreach ($data['product_category'] as $product_id) {
                 DB::table($this->config['db_prefix'].'product_to_category')->insert([
                     'product_id'    =>  (int)$product_id,
-                    'category_id'   =>  (int)$category_id
+                    'product_id'   =>  (int)$product_id
                 ]);
 
 			}
@@ -442,10 +540,10 @@ class ProductController extends Controller
 
         if (isset($data['product_category'])) {
             DB::table($this->config['db_prefix'].'product_to_category')->where('product_id',$product_id)->delete();
-			foreach ($data['product_category'] as $category_id) {
+			foreach ($data['product_category'] as $product_id) {
                 DB::table($this->config['db_prefix'].'product_to_category')->insert([
                     'product_id'    =>  (int)$product_id,
-                    'category_id'   =>  (int)$category_id
+                    'product_id'   =>  (int)$product_id
                 ]);
 
 			}
