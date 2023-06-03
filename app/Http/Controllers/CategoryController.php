@@ -106,10 +106,10 @@ class CategoryController extends Controller
 
         //Insert data table oc_category
         $category_id = DB::table($this->config['db_prefix'].'category')->insertGetId([
-            'parent_id'     =>  (int)$data['parent_id'],
-            'top'           =>  isset($data['top']) ? (int)$data['top'] : 0,
-            'column'        =>  (int)$data['column'],
-            'sort_order'    =>  (int)$data['sort_order'],
+            'parent_id'     =>  isset($data['parent_id']) ? (int)$data['parent_id'] : 0,
+            'top'           =>  isset($data['top']) ? (int)$data['top'] : 1,
+            'column'        =>  isset($data['column']) ? (int)$data['column'] : 1,
+            'sort_order'    =>  isset($data['sort_order']) ? (int)$data['sort_order'] : 1,
             'status'        =>  (int)$data['status'],
             'date_modified' =>  NOW(),
             'date_added'    =>  NOW()
@@ -125,18 +125,15 @@ class CategoryController extends Controller
 		}
 
         //Insert data table oc_category_description
-        foreach ($data['category_description'] as $value) {
             DB::table($this->config['db_prefix'].'category_description')->insert([
-                'category_id'     =>  (int)$category_id,
-                'language_id'     =>  (int)$value['language_id'],
-                'name'        =>  $value['name'],
-                'description'    =>  $value['description'],
-                'meta_title'        =>  $value['meta_title'],
-                'meta_description' =>  $value['meta_description'],
-                'meta_keyword'    =>  $value['meta_keyword']
+                'category_id'       =>  (int)$category_id,
+                'language_id'       =>  $this->config['language_id'],
+                'name'              =>  $data['name'],
+                'description'       =>  isset($data['description']) ? $data['description'] : $data['name'],
+                'meta_title'        =>  isset($data['meta_title']) ? $data['meta_title'] : $data['name'],
+                'meta_description'  =>  isset($data['meta_description']) ? $data['meta_description'] : $data['name'],
+                'meta_keyword'      =>  isset($data['meta_keyword']) ? $data['meta_keyword'] : str_replace(' ',',',$data['name'])
             ]);
-		}
-
 
         $level = 0;
 
@@ -144,9 +141,9 @@ class CategoryController extends Controller
 
 		foreach ($query as $result) {
             DB::table($this->config['db_prefix'].'category_path')->insert([
-                'category_id'     =>  (int)$category_id,
-                'path_id'     =>  (int)$result['path_id'],
-                'level'        =>  (int)$level
+                'category_id'   =>  (int)$category_id,
+                'path_id'       =>  (int)$result['path_id'],
+                'level'         =>  (int)$level
             ]);
 
 			$level++;
@@ -168,37 +165,24 @@ class CategoryController extends Controller
 			}
 		}
 
-		if (isset($data['category_store'])) {
-			foreach ($data['category_store'] as $store_id) {
-                DB::table($this->config['db_prefix'].'category_to_store')->insert([
-                    'category_id'   =>  (int)$category_id,
-                    'store_id'     =>  (int)$store_id
-                ]);
-			}
-		}
-
-        if (isset($data['category_seo_url'])) {
-			foreach ($data['category_seo_url'] as $seo_url) {
-					if (!empty($seo_url['keyword'])) {
+        if (isset($data['category_seo_url']) && !empty($data['category_seo_url'])) {
                         DB::table($this->config['db_prefix'].'seo_url')->insert([
-                            'store_id'      =>  (int)$seo_url['store_id'],
-                            'language_id'   =>  (int)$seo_url['language_id'],
+                            'store_id'      =>  $this->config['store_id'],
+                            'language_id'   =>  $this->config['language_id'],
                             'query'         =>  "category_id=".(int)$category_id,
                             'keyword'       =>  $seo_url['keyword']
                         ]);
-					}
-			}
-		}
 
-        if (isset($data['category_layout'])) {
-			foreach ($data['category_layout'] as $store_id => $layout_id) {
-                DB::table($this->config['db_prefix'].'category_to_layout')->insert([
-                    'category_id'   =>  (int)$category_id,
-                    'store_id'     =>  (int)$store_id,
-                    'layout_id'   =>  (int)$layout_id
-                ]);
-			}
-		}
+		} else {
+
+            DB::table($this->config['db_prefix'].'seo_url')->insert([
+                'store_id'      =>  $this->config['store_id'],
+                'language_id'   =>  $this->config['language_id'],
+                'query'         =>  "category_id=".(int)$category_id,
+                'keyword'       =>  Str::slug($data['name'])
+            ]);
+
+        }
 
         return response()->json(['status' => 'ok', 'data' => ['category_id' => $category_id]], 200);
     }
