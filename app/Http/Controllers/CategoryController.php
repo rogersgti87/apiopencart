@@ -165,6 +165,16 @@ class CategoryController extends Controller
 			}
 		}
 
+
+
+
+        DB::table($this->config['db_prefix'].'category_to_store')->insert([
+            'category_id'   =>  (int)$category_id,
+            'store_id'      =>  $this->config['store_id']
+        ]);
+
+
+
         if (isset($data['category_seo_url']) && !empty($data['category_seo_url'])) {
                         DB::table($this->config['db_prefix'].'seo_url')->insert([
                             'store_id'      =>  $this->config['store_id'],
