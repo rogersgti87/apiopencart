@@ -306,7 +306,11 @@ class CategoryController extends Controller
 				$level = 0;
 
 				foreach ($path as $path_id) {
-                    DB::table($this->config['db_prefix'].'category_path')->updateOrInsert([
+                    DB::table($this->config['db_prefix'].'category_path')->updateOrInsert(
+                        [
+                            'category_id'   =>  (int)$category_path->category_id,
+                        ],
+                        [
                         'category_id'   =>  (int)$category_path->category_id,
                         'path_id'       =>  (int)$path_id,
                         'level'         =>  (int)$level
