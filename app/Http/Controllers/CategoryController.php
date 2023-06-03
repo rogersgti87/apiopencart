@@ -120,7 +120,6 @@ class CategoryController extends Controller
         if (isset($data['image'])) {
             DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
                 'image'     =>  $data['image']
-
             ]);
 		}
 
@@ -248,14 +247,170 @@ class CategoryController extends Controller
     }
 
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $category_id)
     {
-        //
+
+        $data = $request->all();
+
+        $category = DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->first();
+
+        DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
+            'parent_id'     =>  isset($data['parent_id']) ? (int)$data['parent_id'] : $category->parent_id,
+            'top'           =>  isset($data['top']) ? (int)$data['top'] : $category->top,
+            'column'        =>  isset($data['column']) ? (int)$data['column'] : $category->column,
+            'sort_order'    =>  isset($data['sort_order']) ? (int)$data['sort_order'] : $category->sort_order,
+            'status'        =>  (int)$data['status'],
+            'date_modified' =>  NOW()
+        ]);
+
+        //update image table category
+        if (isset($data['image'])) {
+            DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
+                'image'     =>  $data['image']
+            ]);
+        }
+
+        DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$category_id)->delete();
+
+         //Insert data table oc_category_description
+         DB::table($this->config['db_prefix'].'category_description')->insert([
+            'category_id'       =>  (int)$category_id,
+            'language_id'       =>  $this->config['language_id'],
+            'name'              =>  $data['name'],
+            'description'       =>  isset($data['description']) ? $data['description'] : $data['name'],
+            'meta_title'        =>  isset($data['meta_title']) ? $data['meta_title'] : $data['name'],
+            'meta_description'  =>  isset($data['meta_description']) ? $data['meta_description'] : $data['name'],
+            'meta_keyword'      =>  isset($data['meta_keyword']) ? $data['meta_keyword'] : str_replace(' ',',',$data['name'])
+        ]);
+
+
+        $query = DB::table($this->config['db_prefix'].'category_path')->where('path_id',(int)$category_id)->orderby('level','ASC')->get();
+
+        if (count($query) > 0) {
+			foreach ($query as $category_path) {
+                DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_path->category_id)->where('level','<',(int)$category_path->level)->delete();
+				$path = array();
+
+                $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($data['parent_id']) ? (int)$data['parent_id'] : 0)->orderby('level','ASC')->get();
+
+				foreach ($query as $result) {
+					$path[] = $result->path_id;
+				}
+
+                $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_path->category_id)->orderby('level','ASC')->get();
+
+				foreach ($query as $result) {
+					$path[] = $result->path_id;
+				}
+
+				$level = 0;
+
+				foreach ($path as $path_id) {
+                    DB::table($this->config['db_prefix'].'category_path')->updateOrInsert([
+                        'category_id'   =>  (int)$category_path->category_id,
+                        'path_id'       =>  (int)$path_id,
+                        'level'         =>  (int)$level
+                    ]);
+
+					$level++;
+				}
+			}
+		} else {
+
+            DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_id)->delete();
+
+			$level = 0;
+
+            $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($data['parent_id']) ? (int)$data['parent_id'] : 0)->orderby('level','ASC')->get();
+
+			foreach ($query as $result) {
+
+                DB::table($this->config['db_prefix'].'category_path')->insert([
+                    'category_id'   => (int)$category_id,
+                    'path_id'       =>  (int)$result['path_id'],
+                    'level'         =>  (int)$level
+                ]);
+
+				$level++;
+			}
+
+            DB::table($this->config['db_prefix'].'category_path')->updateOrInsert([
+                'category_id'   =>  (int)$category_id,
+                'path_id'       =>  (int)$category_id,
+                'level'         =>  (int)$level
+            ]);
+		}
+
+        DB::table($this->config['db_prefix'].'category_filter')->where('category_id',(int)$category_id)->delete();
+
+        if (isset($data['category_filter'])) {
+			foreach ($data['category_filter'] as $filter_id) {
+                DB::table($this->config['db_prefix'].'category_filter')->insert([
+                    'category_id'   =>  (int)$category_id,
+                    'filter_id'     =>  (int)$filter_id
+                ]);
+			}
+		}
+
+        DB::table($this->config['db_prefix'].'category_to_store')->where('category_id',(int)$category_id)->delete();
+
+        DB::table($this->config['db_prefix'].'category_to_store')->insert([
+            'category_id'   =>  (int)$category_id,
+            'store_id'      =>  $this->config['store_id']
+        ]);
+
+
+
+        DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$category_id)->delete();
+
+		if (isset($data['category_seo_url']) && !empty($data['category_seo_url'])) {
+            DB::table($this->config['db_prefix'].'seo_url')->insert([
+                'store_id'      =>  $this->config['store_id'],
+                'language_id'   =>  $this->config['language_id'],
+                'query'         =>  "category_id=".(int)$category_id,
+                'keyword'       =>  $seo_url['keyword']
+            ]);
+
+        } else {
+
+        DB::table($this->config['db_prefix'].'seo_url')->insert([
+            'store_id'      =>  $this->config['store_id'],
+            'language_id'   =>  $this->config['language_id'],
+            'query'         =>  "category_id=".(int)$category_id,
+            'keyword'       =>  Str::slug($data['name'])
+        ]);
+
+        }
+
+		return response()->json(['status' => 'ok', 'data' => ['category_id' => $category_id]], 200);
+
+
     }
 
 
-    public function destroy(string $id)
+    public function destroy(string $category_id)
     {
-        //
+
+        DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_id)->delete();
+
+        $query = DB::table($this->config['db_prefix'].'category_path')->where('path_id',(int)$category_id)->get();
+
+		foreach ($query as $result) {
+			$this->destroy($result->category_id);
+		}
+
+        DB::table($this->config['db_prefix'].'category')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'category_filter')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'category_to_store')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'category_to_layout')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'product_to_category')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'coupon_category')->where('category_id',(int)$category_id)->delete();
+
+        return response()->json(['status' => 'ok', 'data' => ['category_id' => $category_id]], 200);
+
     }
+
+
 }

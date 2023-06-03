@@ -23,3 +23,5 @@ use App\Http\Controllers\CategoryController;
 Route::get('/categories',[CategoryController::class,'index']);
 Route::get('/category/{id}',[CategoryController::class,'show']);
 Route::post('/category',[CategoryController::class,'store']);
+Route::put('/category/{category_id}',[CategoryController::class,'update']);
+Route::delete('/category/{category_id}',[CategoryController::class,'destroy']);
