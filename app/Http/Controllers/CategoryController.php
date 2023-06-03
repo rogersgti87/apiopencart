@@ -133,18 +133,18 @@ class CategoryController extends Controller
 
             $extension = explode('/', mime_content_type($data['image']))[1];
             if($extension == 'jpeg'){
-                $extension == '.jpg';
+                $extension == 'jpg';
             } else if($extension == 'png'){
-                $extension == '.png';
+                $extension == 'png';
             } else if($extension == 'gif'){
-                $extension == '.gif';
+                $extension == 'gif';
             }else{
-                $extension == '.jpg';
+                $extension == 'jpg';
             }
 
-            $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
+            $image = str_replace('data:image/'.$extension.';base64,', '', $data['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = Str::slug($data['name']) . $extension;
+            $imageName = Str::slug($data['name']) .'.'. $extension;
             if(isset($data['path_image'])){
                 if(!file_exists($this->config['path_image'].$data['path_image'])){
                     \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
@@ -333,18 +333,18 @@ class CategoryController extends Controller
             $extension = explode('/', mime_content_type($data['image']))[1];
 
             if($extension == 'jpeg'){
-                $extension == '.jpg';
+                $extension == 'jpg';
             } else if($extension == 'png'){
-                $extension == '.png';
+                $extension == 'png';
             } else if($extension == 'gif'){
-                $extension == '.gif';
+                $extension == 'gif';
             }else{
-                $extension == '.jpg';
+                $extension == 'jpg';
             }
 
-            $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
+            $image = str_replace('data:image/'.$extension.';base64,', '', $data['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = Str::slug($data['name']) . $extension;
+            $imageName = Str::slug($data['name']) .'.'. $extension;
             if(isset($data['path_image'])){
                 if(!file_exists($this->config['path_image'].$data['path_image'])){
                     \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
