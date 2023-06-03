@@ -118,11 +118,13 @@ class CategoryController extends Controller
 
         //update image table category
         if (isset($data['image'])) {
-
-            $image = str_replace('data:image/png;base64,', '', $data['image']);
+            $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = md5(rand(11111, 99999)) . '_' . time() . '.jpg';
+            $imageName = date('dmyhis') . '.jpg';
             if(isset($data['path_image'])){
+                if(!file_exists($this->config['path_image'].$data['path_image'])){
+                    \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
+                }
                 $folder = isset($data['path_image']) ? $data['path_image'] : '';
                 $path = $this->config['path_image'] . $folder.'/'. $imageName;
                 $imageName = $folder.'/'.$imageName;
@@ -135,7 +137,7 @@ class CategoryController extends Controller
             $result = $image->save($path);
 
             DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
-                'image'     =>  $imageName
+                'image'     =>  'catalog/'.$imageName
             ]);
 		}
 
@@ -281,10 +283,28 @@ class CategoryController extends Controller
 
         //update image table category
         if (isset($data['image'])) {
+            $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
+            $image = str_replace(' ', '+', $image);
+            $imageName = date('dmyhis') . '.jpg';
+            if(isset($data['path_image'])){
+                if(!file_exists($this->config['path_image'].$data['path_image'])){
+                    \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
+                }
+                $folder = isset($data['path_image']) ? $data['path_image'] : '';
+                $path = $this->config['path_image'] . $folder.'/'. $imageName;
+                $imageName = $folder.'/'.$imageName;
+            }else{
+                $path = $this->config['path_image'] . $imageName;
+            }
+
+            $input = \File::put($path, base64_decode($image));
+            $image = Image::make($path)->resize(1000, 1000);
+            $result = $image->save($path);
+
             DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
-                'image'     =>  $data['image']
+                'image'     =>  'catalog/'.$imageName
             ]);
-        }
+		}
 
         DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$category_id)->delete();
 
