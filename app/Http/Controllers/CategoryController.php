@@ -130,7 +130,7 @@ class CategoryController extends Controller
                 $path = $this->config['path_image'] . $imageName;
             }
 
-            $input = File::put($path, base64_decode($image));
+            $input = \File::put($path, base64_decode($image));
             $image = Image::make($path)->resize(1000, 1000);
             $result = $image->save($path);
 
