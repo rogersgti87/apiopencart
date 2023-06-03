@@ -52,7 +52,7 @@ class CategoryController extends Controller
 
         foreach($data['data'] as $key => $result){
 
-            $seo_url = DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$result->c_category_id)->first();
+            //$seo_url = DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$result->c_category_id)->first();
 
             $data['data'][$key] = [
                 'category'  =>  [
@@ -64,8 +64,8 @@ class CategoryController extends Controller
                     'sort_order'            => $result->c_sort_order,
                     'status'                => $result->c_status,
                     'date_added'            => $result->c_date_added,
-                    'date_modified'         => $result->c_date_modified,
-                    'seo_url'               => $seo_url->keyword
+                    'date_modified'         => $result->c_date_modified
+                    //'seo_url'               => $seo_url->keyword
                 ],
                 'category_description'  =>  [
                     'category_id'           => $result->cd_category_id,
