@@ -159,7 +159,7 @@ class ProductController extends Controller
 		}
 
 		if (isset($data['product_image'])) {
-			foreach ($data['product_image'] as $key => $product_image) {
+			foreach ($data['product_image'] as $key => $product) {
 
                 $extension = explode('/', mime_content_type($product->image))[1];
 
