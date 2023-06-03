@@ -137,7 +137,7 @@ class CategoryController extends Controller
 
         $level = 0;
 
-        $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$data['parent_id'])->orderby('level','ASC')->get();
+        $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($data['parent_id']) ? (int)$data['parent_id'] : 0)->orderby('level','ASC')->get();
 
 		foreach ($query as $result) {
             DB::table($this->config['db_prefix'].'category_path')->insert([
