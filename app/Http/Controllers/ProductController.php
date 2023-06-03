@@ -257,6 +257,23 @@ class ProductController extends Controller
 
         $data = $request->all();
 
+
+        if(!isset($data['product_category']) || $data['product_category'] == ''){
+            return response()->json('O campo product_category é obrigatório!', 422);
+        }
+
+        if(!isset($data['model']) || $data['model'] == ''){
+            return response()->json('O campo model é obrigatório!', 422);
+        }
+
+        if(!isset($data['name']) || $data['name'] == ''){
+            return response()->json('O campo name é obrigatório!', 422);
+        }
+
+        if(!isset($data['status']) || $data['status'] == ''){
+            return response()->json('O campo status é obrigatório!', 422);
+        }
+
         $product = DB::table($this->config['db_prefix'].'product')->where('product_id',$product_id)->first();
 
         DB::table($this->config['db_prefix'].'product')->where('product_id',$product_id)->update([
