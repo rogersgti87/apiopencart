@@ -347,6 +347,46 @@ class ProductController extends Controller
             return response()->json('O parametro ID do produto é obrigatório!', 422);
         }
 
+
+        $oc_product               =   DB::table('oc_product')->where('product_id',$id)->first();
+
+        if(!$oc_product){
+            return response()->json('Produto não existe!', 422);
+        }
+
+
+        $oc_product_descriptions  =   DB::table('oc_product_description')->where('product_id',$oc_product->product_id)->get();
+        $oc_product_images        =   DB::table('oc_product_image')->where('product_id',$oc_product->product_id)->get();
+        $oc_product_specials      =   DB::table('oc_product_special')->where('product_id',$oc_product->product_id)->get();
+        $seo_url                  =   DB::table($this->config['db_prefix'].'seo_url')->where('query','product_id='.$oc_product->product_id)->first();
+
+        $oc_product->seo_url      =  $seo_url != '' ? $seo_url->keyword : '';
+
+        $product_descriptions = [];
+        foreach($oc_product_descriptions as $oc_product_description){
+            $product_descriptions[] = $oc_product_description;
+        }
+
+        $product_images       = [];
+        foreach($oc_product_images as $oc_product_image){
+            $product_images[]     = $oc_product_image;
+        }
+
+        $product_specials         = [];
+        foreach($oc_product_specials as $oc_product_special){
+            $product_specials[]     = $oc_product_special;
+        }
+
+        $product = [
+            'product'              =>  $oc_product,
+            'product_description'  =>  $product_descriptions,
+            'product_images'       =>  $product_images,
+            'product_special'      =>  $product_specials
+        ];
+
+    return response()->json($product, 200);
+
+
     }
 
 
@@ -582,6 +622,28 @@ class ProductController extends Controller
         if($product_id == null){
             return response()->json('O parametro ID do produto é obrigatório!', 422);
         }
+
+        DB::table($this->config['db_prefix'].'product')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_attribute')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_description')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_discount')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_filter')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_image')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_option')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_option_value')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_related')->where('related_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_reward')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_special')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_to_category')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_to_download')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_to_layout')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_to_store')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_recurring')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'review')->where('product_id',(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'seo_url')->where('query','product_id='.(int)$product_id)->delete();
+        DB::table($this->config['db_prefix'].'coupon_product')->where('product_id',(int)$product_id)->delete();
+
+        return response()->json(['status' => 'ok', 'data' => ['product_id' => $product_id]], 200);
 
     }
 

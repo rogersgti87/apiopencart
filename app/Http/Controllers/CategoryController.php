@@ -253,6 +253,11 @@ class CategoryController extends Controller
         }
 
         $oc_category                =   DB::table('oc_category')->where('category_id',$id)->first();
+
+        if(!$oc_category){
+            return response()->json('Categoria não existe!', 422);
+        }
+
         $oc_category_descriptions   =   DB::table('oc_category_description')->where('category_id',$oc_category->category_id)->get();
         $oc_category_filters        =   DB::table('oc_category_filter')->where('category_id',$oc_category->category_id)->get();
         $oc_category_paths          =   DB::table('oc_category_path')->where('category_id',$oc_category->category_id)->get();
