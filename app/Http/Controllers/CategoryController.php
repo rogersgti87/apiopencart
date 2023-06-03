@@ -52,6 +52,8 @@ class CategoryController extends Controller
 
         foreach($data['data'] as $key => $result){
 
+            $seo_url = DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$result->c_category_id)->first();
+
             $data['data'][$key] = [
                 'category'  =>  [
                     'category_id'           => $result->c_category_id,
@@ -63,6 +65,7 @@ class CategoryController extends Controller
                     'status'                => $result->c_status,
                     'date_added'            => $result->c_date_added,
                     'date_modified'         => $result->c_date_modified,
+                    'seo_url'               => $seo_url->keyword
                 ],
                 'category_description'  =>  [
                     'category_id'           => $result->cd_category_id,
@@ -239,6 +242,9 @@ class CategoryController extends Controller
         $oc_category_paths          =   DB::table('oc_category_path')->where('category_id',$oc_category->category_id)->get();
         $oc_category_to_layouts     =   DB::table('oc_category_to_layout')->where('category_id',$oc_category->category_id)->get();
         $oc_category_to_stores      =   DB::table('oc_category_to_store')->where('category_id',$oc_category->category_id)->get();
+        $seo_url                    =   DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$id)->first();
+
+        $oc_category->seo_url       =  $seo_url->keyword;
 
         $category_descriptions = [];
         foreach($oc_category_descriptions as $oc_category_description){
