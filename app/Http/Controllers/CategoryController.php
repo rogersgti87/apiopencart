@@ -118,8 +118,24 @@ class CategoryController extends Controller
 
         //update image table category
         if (isset($data['image'])) {
+
+            $image = str_replace('data:image/png;base64,', '', $data['image']);
+            $image = str_replace(' ', '+', $image);
+            $imageName = md5(rand(11111, 99999)) . '_' . time() . '.jpg';
+            if(isset($data['path_image'])){
+                $folder = isset($data['path_image']) ? $data['path_image'] : '';
+                $path = $this->config['path_image'] . $folder.'/'. $imageName;
+                $imageName = $folder.'/'.$imageName;
+            }else{
+                $path = $this->config['path_image'] . $imageName;
+            }
+
+            $input = File::put($path, base64_decode($image));
+            $image = Image::make($path)->resize(1000, 1000);
+            $result = $image->save($path);
+
             DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
-                'image'     =>  $data['image']
+                'image'     =>  $imageName
             ]);
 		}
 
