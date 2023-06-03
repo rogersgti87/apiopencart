@@ -130,9 +130,21 @@ class CategoryController extends Controller
 
         //update image table category
         if (isset($data['image'])) {
+
+            $extension = explode('/', mime_content_type($data['image']))[1];
+            if($extension == 'jpeg'){
+                $extension == '.jpg';
+            } else if($extension == 'png'){
+                $extension == '.png';
+            } else if($extension == 'gif'){
+                $extension == '.gif';
+            }else{
+                $extension == '.jpg';
+            }
+
             $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = Str::slug($data['name']) . '.jpg';
+            $imageName = Str::slug($data['name']) . $extension;
             if(isset($data['path_image'])){
                 if(!file_exists($this->config['path_image'].$data['path_image'])){
                     \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
@@ -215,7 +227,7 @@ class CategoryController extends Controller
                             'store_id'      =>  $this->config['store_id'],
                             'language_id'   =>  $this->config['language_id'],
                             'query'         =>  "category_id=".(int)$category_id,
-                            'keyword'       =>  $seo_url['keyword']
+                            'keyword'       =>  $data['category_seo_url']
                         ]);
 
 		} else {
@@ -235,6 +247,10 @@ class CategoryController extends Controller
 
     public function show(string $id)
     {
+
+        if($id == null){
+            return response()->json('O parametro ID da categoria é obrigatório!', 422);
+        }
 
         $oc_category                =   DB::table('oc_category')->where('category_id',$id)->first();
         $oc_category_descriptions   =   DB::table('oc_category_description')->where('category_id',$oc_category->category_id)->get();
@@ -313,9 +329,22 @@ class CategoryController extends Controller
 
         //update image table category
         if (isset($data['image'])) {
+
+            $extension = explode('/', mime_content_type($data['image']))[1];
+
+            if($extension == 'jpeg'){
+                $extension == '.jpg';
+            } else if($extension == 'png'){
+                $extension == '.png';
+            } else if($extension == 'gif'){
+                $extension == '.gif';
+            }else{
+                $extension == '.jpg';
+            }
+
             $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = Str::slug($data['name']) . '.jpg';
+            $imageName = Str::slug($data['name']) . $extension;
             if(isset($data['path_image'])){
                 if(!file_exists($this->config['path_image'].$data['path_image'])){
                     \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
@@ -444,7 +473,7 @@ class CategoryController extends Controller
                 'store_id'      =>  $this->config['store_id'],
                 'language_id'   =>  $this->config['language_id'],
                 'query'         =>  "category_id=".(int)$category_id,
-                'keyword'       =>  $seo_url['keyword']
+                'keyword'       =>  $data['category_seo_url']
             ]);
 
         } else {
@@ -466,6 +495,10 @@ class CategoryController extends Controller
 
     public function destroy(string $category_id)
     {
+
+        if($category_id == null){
+            return response()->json('O parametro ID da categoria é obrigatório!', 422);
+        }
 
         DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_id)->delete();
 
