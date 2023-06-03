@@ -209,7 +209,7 @@ class ProductController extends Controller
 
 		if (isset($data['product_category'])) {
 			foreach ($data['product_category'] as $category_id) {
-                DB::table($this->config['db_prefix'].'product_to_category')->where('product_id',$product_id)->insert([
+                DB::table($this->config['db_prefix'].'product_to_category')->insert([
                     'product_id'    =>  (int)$product_id,
                     'category_id'   =>  (int)$category_id
                 ]);
