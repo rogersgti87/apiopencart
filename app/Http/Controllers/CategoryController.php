@@ -102,7 +102,16 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
+
         $data = $request->all();
+
+        if(!isset($data['name']) || $data['name'] == ''){
+            return response()->json('O campo name é obrigatório!', 422);
+        }
+
+        if(!isset($data['status']) || $data['status'] == ''){
+            return response()->json('O campo status é obrigatório!', 422);
+        }
 
         //Insert data table oc_category
         $category_id = DB::table($this->config['db_prefix'].'category')->insertGetId([
@@ -120,15 +129,21 @@ class CategoryController extends Controller
         if (isset($data['image'])) {
             $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = date('dmyhis') . '.jpg';
+            $imageName = Str::slug($data['name']) . '.jpg';
             if(isset($data['path_image'])){
                 if(!file_exists($this->config['path_image'].$data['path_image'])){
                     \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
+                }
+                if(file_exists($this->config['path_image'].$data['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].$data['path_image'].'/'.$imageName);
                 }
                 $folder = isset($data['path_image']) ? $data['path_image'] : '';
                 $path = $this->config['path_image'] . $folder.'/'. $imageName;
                 $imageName = $folder.'/'.$imageName;
             }else{
+                if(file_exists($this->config['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].'/'.$imageName);
+                }
                 $path = $this->config['path_image'] . $imageName;
             }
 
@@ -270,6 +285,15 @@ class CategoryController extends Controller
 
         $data = $request->all();
 
+
+        if(!isset($data['name']) || $data['name'] == ''){
+            return response()->json('O campo name é obrigatório!', 422);
+        }
+
+        if(!isset($data['status']) || $data['status'] == ''){
+            return response()->json('O campo status é obrigatório!', 422);
+        }
+
         $category = DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->first();
 
         DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
@@ -285,15 +309,21 @@ class CategoryController extends Controller
         if (isset($data['image'])) {
             $image = str_replace('data:image/jpeg;base64,', '', $data['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = date('dmyhis') . '.jpg';
+            $imageName = Str::slug($data['name']) . '.jpg';
             if(isset($data['path_image'])){
                 if(!file_exists($this->config['path_image'].$data['path_image'])){
                     \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
+                }
+                if(file_exists($this->config['path_image'].$data['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].$data['path_image'].'/'.$imageName);
                 }
                 $folder = isset($data['path_image']) ? $data['path_image'] : '';
                 $path = $this->config['path_image'] . $folder.'/'. $imageName;
                 $imageName = $folder.'/'.$imageName;
             }else{
+                if(file_exists($this->config['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].'/'.$imageName);
+                }
                 $path = $this->config['path_image'] . $imageName;
             }
 
