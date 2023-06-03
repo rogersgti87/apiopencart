@@ -142,7 +142,7 @@ class CategoryController extends Controller
 		foreach ($query as $result) {
             DB::table($this->config['db_prefix'].'category_path')->insert([
                 'category_id'   =>  (int)$category_id,
-                'path_id'       =>  (int)$result['path_id'],
+                'path_id'       =>  (int)$result->path_id,
                 'level'         =>  (int)$level
             ]);
 
