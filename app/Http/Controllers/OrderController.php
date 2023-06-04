@@ -34,13 +34,13 @@ class OrderController extends Controller
                 $newValue = "'$value'";
             }
 
-            $data  = DB::table($this->config['db_prefix'].'orders')
+            $data  = DB::table($this->config['db_prefix'].'order')
                         ->whereraw("$newValueCategory")
                         ->orderby('date_modified','DESC')
                         ->paginate(20);
         } else {
 
-            $data  = DB::table($this->config['db_prefix'].'orders')
+            $data  = DB::table($this->config['db_prefix'].'order')
                         ->orderby('date_modified','DESC')
                         ->paginate(20);
 
