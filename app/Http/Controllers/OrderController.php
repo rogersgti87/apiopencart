@@ -27,8 +27,6 @@ class OrderController extends Controller
         $value  = $request->input('value');
         $status = $request->input('status');
 
-         dd($field,$op,$value,$status);
-
         if($field && $op && $value){
             if($op == 'like'){
                 $newValue = "'%$value%'";
@@ -42,6 +40,7 @@ class OrderController extends Controller
                 $newStatus = 'and order_status_id > 0';
             }
 
+            dd($field,$op,$value,$status);
 
             $data  = DB::table($this->config['db_prefix'].'order')
                         ->whereraw("$newValue $newStatus")
