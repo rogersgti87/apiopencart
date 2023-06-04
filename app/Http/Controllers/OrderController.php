@@ -26,7 +26,11 @@ class OrderController extends Controller
         $op     = $request->input('op');
         $value  = $request->input('value');
 
-        return $field;
+        if($field){
+            return 'existe';
+        }else{
+            return 'nao existe';
+        }
 
         if($op == 'like'){
             $newValue = "'%$value%'";
