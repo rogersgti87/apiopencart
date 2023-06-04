@@ -22,13 +22,13 @@ use App\Http\Controllers\ProductController;
 
 
 Route::get('/categories',[CategoryController::class,'index']);
-Route::get('/category/{id}',[CategoryController::class,'show']);
-Route::post('/category',[CategoryController::class,'store']);
-Route::put('/category/{category_id}',[CategoryController::class,'update']);
-Route::delete('/category/{category_id}',[CategoryController::class,'destroy']);
+Route::get('/categories/{id}',[CategoryController::class,'show']);
+Route::post('/categories',[CategoryController::class,'store']);
+Route::put('/categories/{category_id}',[CategoryController::class,'update']);
+Route::delete('/categories/{category_id}',[CategoryController::class,'destroy']);
 
 Route::get('/products',[ProductController::class,'index']);
-Route::get('/product/{id}',[ProductController::class,'show']);
-Route::post('/product',[ProductController::class,'store']);
-Route::put('/product/{product_id}',[ProductController::class,'update']);
-Route::delete('/product/{product_id}',[ProductController::class,'destroy']);
+Route::get('/products/{id}',[ProductController::class,'show']);
+Route::post('/products',[ProductController::class,'store']);
+Route::put('/products/{product_id}',[ProductController::class,'update']);
+Route::delete('/products/{product_id}',[ProductController::class,'destroy']);
