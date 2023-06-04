@@ -25,6 +25,7 @@ class OrderController extends Controller
         $field  = $request->input('field');
         $op     = $request->input('op');
         $value  = $request->input('value');
+        $status = $request->input('status');
 
 
         if($field && $op && $value){
@@ -34,14 +35,29 @@ class OrderController extends Controller
                 $newValue = "'$value'";
             }
 
+            if(isset($status)){
+                $newStatus = "and status = '$status'";
+            } else {
+                $newStatus = 'and status > 0';
+            }
+
+
             $data  = DB::table($this->config['db_prefix'].'order')
-                        ->whereraw("$newValueCategory")
+                        ->whereraw("$newValue $newStatus")
                         ->orderby('date_modified','DESC')
                         ->paginate(20);
         } else {
 
+            if(isset($status)){
+                $newStatus = "status = '$status'";
+            } else {
+                $newStatus = 'status > 0';
+            }
+
+
             $data  = DB::table($this->config['db_prefix'].'order')
                         ->orderby('date_modified','DESC')
+                        ->whereraw("$newStatus")
                         ->paginate(20);
 
         }
