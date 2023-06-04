@@ -36,9 +36,9 @@ class OrderController extends Controller
             }
 
             if(isset($status)){
-                $newStatus = "and status = '$status'";
+                $newStatus = "and order_status_id = '$status'";
             } else {
-                $newStatus = 'and status > 0';
+                $newStatus = 'and order_status_id > 0';
             }
 
 
@@ -49,9 +49,9 @@ class OrderController extends Controller
         } else {
 
             if(isset($status)){
-                $newStatus = "status = '$status'";
+                $newStatus = "order_status_id = '$status'";
             } else {
-                $newStatus = 'status > 0';
+                $newStatus = 'order_status_id > 0';
             }
 
 
