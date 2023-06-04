@@ -35,12 +35,12 @@ class OrderController extends Controller
             }
 
             if(isset($status)){
-                $newStatus = "and order_status_id = '$status'";
+                $newStatus = " and order_status_id = '$status'";
             } else {
-                $newStatus = 'and order_status_id > 0';
+                $newStatus = ' and order_status_id > 0';
             }
 
-            dd($field,$op,$value,$status);
+            dd($field,$op,$value,$newStatus);
 
             $data  = DB::table($this->config['db_prefix'].'order')
                         ->whereraw("$newValue $newStatus")
@@ -49,9 +49,9 @@ class OrderController extends Controller
         } else {
 
             if(isset($status)){
-                $newStatus = "order_status_id = '$status'";
+                $newStatus = " order_status_id = '$status'";
             } else {
-                $newStatus = 'order_status_id > 0';
+                $newStatus = ' order_status_id > 0';
             }
 
 
