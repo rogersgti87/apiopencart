@@ -40,7 +40,7 @@ class OrderController extends Controller
                 $newStatus = ' and order_status_id > 0';
             }
 
-            dd($field,$op,$value,$newStatus);
+
 
             $data  = DB::table($this->config['db_prefix'].'order')
                         ->whereraw("$newValue $newStatus")
