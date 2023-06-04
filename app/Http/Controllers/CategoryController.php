@@ -265,7 +265,7 @@ class CategoryController extends Controller
         $oc_category_to_stores      =   DB::table('oc_category_to_store')->where('category_id',$oc_category->category_id)->get();
         $seo_url                    =   DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$id)->first();
 
-        $oc_category->seo_url       =  $seo_url->keyword;
+        $oc_category->seo_url       =  $seo_url != null ? $seo_url->keyword : '';
 
         $category_descriptions = [];
         foreach($oc_category_descriptions as $oc_category_description){
