@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +33,6 @@ Route::get('/products/{id}',[ProductController::class,'show']);
 Route::post('/products',[ProductController::class,'store']);
 Route::put('/products/{product_id}',[ProductController::class,'update']);
 Route::delete('/products/{product_id}',[ProductController::class,'destroy']);
+
+Route::get('/orders',[OrderController::class,'index']);
+
