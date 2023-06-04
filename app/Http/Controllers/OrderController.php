@@ -26,23 +26,26 @@ class OrderController extends Controller
         $op     = $request->input('op');
         $value  = $request->input('value');
 
-        if($field){
-            return 'existe';
-        }else{
-            return 'nao existe';
+
+        if($field && $op && $value){
+            if($op == 'like'){
+                $newValue = "'%$value%'";
+            }else{
+                $newValue = "'$value'";
+            }
+
+            $data  = DB::table($this->config['db_prefix'].'_orders')
+                        ->whereraw("$newValueCategory")
+                        ->orderby('date_modified','DESC')
+                        ->paginate(20);
+        } else {
+
+            $data  = DB::table($this->config['db_prefix'].'_orders')
+                        ->orderby('date_modified','DESC')
+                        ->paginate(20);
+
         }
 
-        if($op == 'like'){
-            $newValue = "'%$value%'";
-        }else{
-            $newValue = "'$value'";
-        }
-
-
-
-        $data  = DB::table($this->config['db_prefix'].'_orders')
-                    ->whereraw("$newValueCategory")
-                    ->paginate(20);
 
         return response()->json($data, 200);
     }
