@@ -27,6 +27,7 @@ class OrderController extends Controller
         $value  = $request->input('value');
         $status = $request->input('status');
 
+         dd($field,$op,$value,$status);
 
         if($field && $op && $value){
             if($op == 'like'){
