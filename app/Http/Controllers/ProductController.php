@@ -90,33 +90,28 @@ class ProductController extends Controller
                     'status'                => $result->p_status,
                     'viewed'                => $result->p_viewed,
                     'date_added'            => $result->p_date_added,
-                    'date_modified'         => $result->p_date_modified
-                ],
-                'product_description'  =>  [
-                    'product_id'            => $result->pd_product_id,
-                    'language_id'           => $result->pd_language_id,
+                    'date_modified'         => $result->p_date_modified,
                     'name'                  => $result->pd_name,
                     'description'           => $result->pd_description,
                     'tag'                   => $result->pd_tag,
                     'meta_title'            => $result->pd_meta_title,
                     'meta_description'      => $result->pd_meta_description,
-                    'meta_keyword'          => $result->pd_meta_keyword
-                ],
-                'product_image'       =>  [
+                    'meta_keyword'          => $result->pd_meta_keyword,
+                    'product_image'       =>  [
                     'product_image_id'      => $result->pi_product_image_id,
                     'product_id'            => $result->pi_product_id,
                     'image'                 => $result->pi_image,
                     'sort_order'            => $result->pi_sort_order
-                ],
-                'product_special'       =>  [
+                    ],
+                    'product_special'       =>  [
                     'product_special_id'    => $result->ps_product_special_id,
                     'customer_group_id'     => $result->ps_customer_group_id,
                     'priority'              => $result->ps_priority,
                     'price'                 => $result->ps_price,
                     'date_start'            => $result->ps_date_start,
                     'date_end'              => $result->ps_date_end
+                    ]
                 ]
-
             ];
 
         }
