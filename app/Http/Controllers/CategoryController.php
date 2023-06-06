@@ -64,10 +64,9 @@ class CategoryController extends Controller
                     'sort_order'            => $result->c_sort_order,
                     'status'                => $result->c_status,
                     'date_added'            => $result->c_date_added,
-                    'date_modified'         => $result->c_date_modified
+                    'date_modified'         => $result->c_date_modified,
                     //'seo_url'               => $seo_url->keyword
-                ],
-                'category_description'  =>  [
+                    'category_description'  =>  [
                     'category_id'           => $result->cd_category_id,
                     'language_id'           => $result->cd_language_id,
                     'name'                  => $result->cd_name,
@@ -79,21 +78,9 @@ class CategoryController extends Controller
                 'category_filter'       =>  [
                     'category_id'           => $result->cf_category_id,
                     'filter_id'             => $result->cf_filter_id,
-                ],
-                'oc_category_path'      =>  [
-                    'category_id'           => $result->cp_category_id,
-                    'path_id'               => $result->cp_path_id,
-                    'level'                 => $result->cp_level,
-                ],
-                'category_to_layout'    =>  [
-                    'category_id'           => $result->cl_category_id,
-                    'store_id'              => $result->cl_store_id,
-                    'layout_id'             => $result->cl_layout_id,
-                ],
-                'category_to_store'  =>  [
-                    'category_id'           => $result->cs_category_id,
-                    'store_id'              => $result->cs_store_id,
                 ]
+                ],
+
 
             ];
 
