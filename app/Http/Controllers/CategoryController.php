@@ -66,16 +66,12 @@ class CategoryController extends Controller
                     'date_added'            => $result->c_date_added,
                     'date_modified'         => $result->c_date_modified,
                     //'seo_url'               => $seo_url->keyword
-                    'category_description'  =>  [
-                    'category_id'           => $result->cd_category_id,
-                    'language_id'           => $result->cd_language_id,
                     'name'                  => $result->cd_name,
                     'description'           => $result->cd_description,
                     'meta_title'            => $result->cd_meta_title,
                     'meta_description'      => $result->cd_meta_description,
                     'meta_keyword'          => $result->cd_meta_keyword,
-                ],
-                'category_filter'       =>  [
+                    'category_filter'       =>  [
                     'category_id'           => $result->cf_category_id,
                     'filter_id'             => $result->cf_filter_id,
                 ]
