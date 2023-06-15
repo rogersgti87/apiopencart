@@ -91,30 +91,34 @@ class CategoryController extends Controller
 
         $data = $request->all();
 
-        if(!isset($data['name']) || $data['name'] == ''){
+        $response_categories = [];
+
+        foreach($data as $result){
+
+        if(!isset($result['name']) || $result['name'] == ''){
             return response()->json('O campo name é obrigatório!', 422);
         }
 
-        if(!isset($data['status']) || $data['status'] == ''){
+        if(!isset($result['status']) || $result['status'] == ''){
             return response()->json('O campo status é obrigatório!', 422);
         }
 
         //Insert data table oc_category
         $category_id = DB::table($this->config['db_prefix'].'category')->insertGetId([
-            'parent_id'     =>  isset($data['parent_id']) ? (int)$data['parent_id'] : 0,
-            'top'           =>  isset($data['top']) ? (int)$data['top'] : 1,
-            'column'        =>  isset($data['column']) ? (int)$data['column'] : 1,
-            'sort_order'    =>  isset($data['sort_order']) ? (int)$data['sort_order'] : 1,
-            'status'        =>  (int)$data['status'],
+            'parent_id'     =>  isset($result['parent_id']) ? (int)$result['parent_id'] : 0,
+            'top'           =>  isset($result['top']) ? (int)$result['top'] : 1,
+            'column'        =>  isset($result['column']) ? (int)$result['column'] : 1,
+            'sort_order'    =>  isset($result['sort_order']) ? (int)$result['sort_order'] : 1,
+            'status'        =>  (int)$result['status'],
             'date_modified' =>  NOW(),
             'date_added'    =>  NOW()
 
         ]);
 
         //update image table category
-        if (isset($data['image'])) {
+        if (isset($result['image'])) {
 
-            $extension = explode('/', mime_content_type($data['image']))[1];
+            $extension = explode('/', mime_content_type($result['image']))[1];
             if($extension == 'jpeg'){
                 $extension == 'jpg';
             } else if($extension == 'png'){
@@ -125,17 +129,17 @@ class CategoryController extends Controller
                 $extension == 'jpg';
             }
 
-            $image = str_replace('data:image/'.$extension.';base64,', '', $data['image']);
+            $image = str_replace('data:image/'.$extension.';base64,', '', $result['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = Str::slug($data['name']) .'.'. $extension;
-            if(isset($data['path_image'])){
-                if(!file_exists($this->config['path_image'].$data['path_image'])){
-                    \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
+            $imageName = Str::slug($result['name']) .'.'. $extension;
+            if(isset($result['path_image'])){
+                if(!file_exists($this->config['path_image'].$result['path_image'])){
+                    \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
                 }
-                if(file_exists($this->config['path_image'].$data['path_image'].'/'.$imageName)){
-                    unlink($this->config['path_image'].$data['path_image'].'/'.$imageName);
+                if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
                 }
-                $folder = isset($data['path_image']) ? $data['path_image'] : '';
+                $folder = isset($result['path_image']) ? $result['path_image'] : '';
                 $path = $this->config['path_image'] . $folder.'/'. $imageName;
                 $imageName = $folder.'/'.$imageName;
             }else{
@@ -147,7 +151,7 @@ class CategoryController extends Controller
 
             $input = \File::put($path, base64_decode($image));
             $image = Image::make($path)->resize(1000, 1000);
-            $result = $image->save($path);
+            $image->save($path);
 
             DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
                 'image'     =>  'catalog/'.$imageName
@@ -158,16 +162,16 @@ class CategoryController extends Controller
             DB::table($this->config['db_prefix'].'category_description')->insert([
                 'category_id'       =>  (int)$category_id,
                 'language_id'       =>  $this->config['language_id'],
-                'name'              =>  $data['name'],
-                'description'       =>  isset($data['description']) ? $data['description'] : $data['name'],
-                'meta_title'        =>  isset($data['meta_title']) ? $data['meta_title'] : $data['name'],
-                'meta_description'  =>  isset($data['meta_description']) ? $data['meta_description'] : $data['name'],
-                'meta_keyword'      =>  isset($data['meta_keyword']) ? $data['meta_keyword'] : str_replace(' ',',',$data['name'])
+                'name'              =>  $result['name'],
+                'description'       =>  isset($result['description']) ? $result['description'] : $result['name'],
+                'meta_title'        =>  isset($result['meta_title']) ? $result['meta_title'] : $result['name'],
+                'meta_description'  =>  isset($result['meta_description']) ? $result['meta_description'] : $result['name'],
+                'meta_keyword'      =>  isset($result['meta_keyword']) ? $result['meta_keyword'] : str_replace(' ',',',$result['name'])
             ]);
 
         $level = 0;
 
-        $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($data['parent_id']) ? (int)$data['parent_id'] : 0)->orderby('level','ASC')->get();
+        $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($result['parent_id']) ? (int)$result['parent_id'] : 0)->orderby('level','ASC')->get();
 
 		foreach ($query as $result) {
             DB::table($this->config['db_prefix'].'category_path')->insert([
@@ -186,8 +190,8 @@ class CategoryController extends Controller
         ]);
 
 
-        if (isset($data['category_filter'])) {
-			foreach ($data['category_filter'] as $filter_id) {
+        if (isset($result['category_filter'])) {
+			foreach ($result['category_filter'] as $filter_id) {
                 DB::table($this->config['db_prefix'].'category_filter')->insert([
                     'category_id'   =>  (int)$category_id,
                     'filter_id'     =>  (int)$filter_id
@@ -205,12 +209,12 @@ class CategoryController extends Controller
 
 
 
-        if (isset($data['category_seo_url']) && !empty($data['category_seo_url'])) {
+        if (isset($result['category_seo_url']) && !empty($result['category_seo_url'])) {
                         DB::table($this->config['db_prefix'].'seo_url')->insert([
                             'store_id'      =>  $this->config['store_id'],
                             'language_id'   =>  $this->config['language_id'],
                             'query'         =>  "category_id=".(int)$category_id,
-                            'keyword'       =>  $data['category_seo_url']
+                            'keyword'       =>  $result['category_seo_url']
                         ]);
 
 		} else {
@@ -219,12 +223,16 @@ class CategoryController extends Controller
                 'store_id'      =>  $this->config['store_id'],
                 'language_id'   =>  $this->config['language_id'],
                 'query'         =>  "category_id=".(int)$category_id,
-                'keyword'       =>  Str::slug($data['name'])
+                'keyword'       =>  Str::slug($result['name'])
             ]);
 
         }
 
-        return response()->json(['status' => 'ok', 'data' => ['category_id' => $category_id]], 200);
+        $response_categories[] = $category_id;
+    }
+
+    return response()->json(['status' => 'ok', 'data' => ['category_id' => $response_categories]], 200);
+
     }
 
 
@@ -296,29 +304,35 @@ class CategoryController extends Controller
         $data = $request->all();
 
 
-        if(!isset($data['name']) || $data['name'] == ''){
+        $response_categories = [];
+
+        foreach($data as $result){
+
+
+
+        if(!isset($result['name']) || $result['name'] == ''){
             return response()->json('O campo name é obrigatório!', 422);
         }
 
-        if(!isset($data['status']) || $data['status'] == ''){
+        if(!isset($result['status']) || $result['status'] == ''){
             return response()->json('O campo status é obrigatório!', 422);
         }
 
         $category = DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->first();
 
         DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
-            'parent_id'     =>  isset($data['parent_id']) ? (int)$data['parent_id'] : $category->parent_id,
-            'top'           =>  isset($data['top']) ? (int)$data['top'] : $category->top,
-            'column'        =>  isset($data['column']) ? (int)$data['column'] : $category->column,
-            'sort_order'    =>  isset($data['sort_order']) ? (int)$data['sort_order'] : $category->sort_order,
-            'status'        =>  (int)$data['status'],
+            'parent_id'     =>  isset($result['parent_id'])   ? (int)$result['parent_id']   : $category->parent_id,
+            'top'           =>  isset($result['top'])         ? (int)$result['top']         : $category->top,
+            'column'        =>  isset($result['column'])      ? (int)$result['column']      : $category->column,
+            'sort_order'    =>  isset($result['sort_order'])  ? (int)$result['sort_order']  : $category->sort_order,
+            'status'        =>  (int)$result['status'],
             'date_modified' =>  NOW()
         ]);
 
         //update image table category
-        if (isset($data['image'])) {
+        if (isset($result['image'])) {
 
-            $extension = explode('/', mime_content_type($data['image']))[1];
+            $extension = explode('/', mime_content_type($result['image']))[1];
 
             if($extension == 'jpeg'){
                 $extension == 'jpg';
@@ -330,17 +344,17 @@ class CategoryController extends Controller
                 $extension == 'jpg';
             }
 
-            $image = str_replace('data:image/'.$extension.';base64,', '', $data['image']);
+            $image = str_replace('data:image/'.$extension.';base64,', '', $result['image']);
             $image = str_replace(' ', '+', $image);
-            $imageName = Str::slug($data['name']) .'.'. $extension;
-            if(isset($data['path_image'])){
-                if(!file_exists($this->config['path_image'].$data['path_image'])){
-                    \File::makeDirectory($this->config['path_image'].$data['path_image'], $mode = 0777, true, true);
+            $imageName = Str::slug($result['name']) .'.'. $extension;
+            if(isset($result['path_image'])){
+                if(!file_exists($this->config['path_image'].$result['path_image'])){
+                    \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
                 }
-                if(file_exists($this->config['path_image'].$data['path_image'].'/'.$imageName)){
-                    unlink($this->config['path_image'].$data['path_image'].'/'.$imageName);
+                if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
                 }
-                $folder = isset($data['path_image']) ? $data['path_image'] : '';
+                $folder = isset($result['path_image']) ? $result['path_image'] : '';
                 $path = $this->config['path_image'] . $folder.'/'. $imageName;
                 $imageName = $folder.'/'.$imageName;
             }else{
@@ -352,7 +366,7 @@ class CategoryController extends Controller
 
             $input = \File::put($path, base64_decode($image));
             $image = Image::make($path)->resize(1000, 1000);
-            $result = $image->save($path);
+            $image->save($path);
 
             DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
                 'image'     =>  'catalog/'.$imageName
@@ -365,11 +379,11 @@ class CategoryController extends Controller
          DB::table($this->config['db_prefix'].'category_description')->insert([
             'category_id'       =>  (int)$category_id,
             'language_id'       =>  $this->config['language_id'],
-            'name'              =>  $data['name'],
-            'description'       =>  isset($data['description']) ? $data['description'] : $data['name'],
-            'meta_title'        =>  isset($data['meta_title']) ? $data['meta_title'] : $data['name'],
-            'meta_description'  =>  isset($data['meta_description']) ? $data['meta_description'] : $data['name'],
-            'meta_keyword'      =>  isset($data['meta_keyword']) ? $data['meta_keyword'] : str_replace(' ',',',$data['name'])
+            'name'              =>  $result['name'],
+            'description'       =>  isset($result['description']) ? $result['description'] : $result['name'],
+            'meta_title'        =>  isset($result['meta_title']) ? $result['meta_title'] : $result['name'],
+            'meta_description'  =>  isset($result['meta_description']) ? $result['meta_description'] : $result['name'],
+            'meta_keyword'      =>  isset($result['meta_keyword']) ? $result['meta_keyword'] : str_replace(' ',',',$result['name'])
         ]);
 
 
@@ -414,7 +428,7 @@ class CategoryController extends Controller
 
 			$level = 0;
 
-            $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($data['parent_id']) ? (int)$data['parent_id'] : 0)->orderby('level','ASC')->get();
+            $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($result['parent_id']) ? (int)$result['parent_id'] : 0)->orderby('level','ASC')->get();
 
 			foreach ($query as $result) {
 
@@ -436,8 +450,8 @@ class CategoryController extends Controller
 
         DB::table($this->config['db_prefix'].'category_filter')->where('category_id',(int)$category_id)->delete();
 
-        if (isset($data['category_filter'])) {
-			foreach ($data['category_filter'] as $filter_id) {
+        if (isset($result['category_filter'])) {
+			foreach ($result['category_filter'] as $filter_id) {
                 DB::table($this->config['db_prefix'].'category_filter')->insert([
                     'category_id'   =>  (int)$category_id,
                     'filter_id'     =>  (int)$filter_id
@@ -456,12 +470,12 @@ class CategoryController extends Controller
 
         DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$category_id)->delete();
 
-		if (isset($data['category_seo_url']) && !empty($data['category_seo_url'])) {
+		if (isset($result['category_seo_url']) && !empty($result['category_seo_url'])) {
             DB::table($this->config['db_prefix'].'seo_url')->insert([
                 'store_id'      =>  $this->config['store_id'],
                 'language_id'   =>  $this->config['language_id'],
                 'query'         =>  "category_id=".(int)$category_id,
-                'keyword'       =>  $data['category_seo_url']
+                'keyword'       =>  $result['category_seo_url']
             ]);
 
         } else {
@@ -470,12 +484,16 @@ class CategoryController extends Controller
             'store_id'      =>  $this->config['store_id'],
             'language_id'   =>  $this->config['language_id'],
             'query'         =>  "category_id=".(int)$category_id,
-            'keyword'       =>  Str::slug($data['name'])
+            'keyword'       =>  Str::slug($result['name'])
         ]);
 
         }
 
-		return response()->json(['status' => 'ok', 'data' => ['category_id' => $category_id]], 200);
+        $response_categories[] = $category_id;
+
+    }
+
+    return response()->json(['status' => 'ok', 'data' => ['category_id' => $response_categories]], 200);
 
 
     }
