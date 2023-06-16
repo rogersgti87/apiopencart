@@ -89,11 +89,12 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
 
-        $data = $request->all();
+        $data = $request->getContent();
 
         $response_categories = [];
 
-        foreach($data as $result){
+
+        foreach(json_decode($data , true) as $result){
 
         if(!isset($result['name']) || $result['name'] == ''){
             return response()->json('O campo name é obrigatório!', 422);
@@ -301,14 +302,12 @@ class CategoryController extends Controller
     public function update(Request $request, string $category_id)
     {
 
-        $data = $request->all();
+        $data = $request->getContent();
 
 
         $response_categories = [];
 
-        foreach($data as $result){
-
-
+        foreach(json_decode($data , true) as $result){
 
         if(!isset($result['name']) || $result['name'] == ''){
             return response()->json('O campo name é obrigatório!', 422);
@@ -430,11 +429,11 @@ class CategoryController extends Controller
 
             $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($result['parent_id']) ? (int)$result['parent_id'] : 0)->orderby('level','ASC')->get();
 
-			foreach ($query as $result) {
+			foreach ($query as $resultcp) {
 
                 DB::table($this->config['db_prefix'].'category_path')->insert([
                     'category_id'   => (int)$category_id,
-                    'path_id'       =>  (int)$result['path_id'],
+                    'path_id'       =>  (int)$resultcp['path_id'],
                     'level'         =>  (int)$level
                 ]);
 
