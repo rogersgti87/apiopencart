@@ -174,10 +174,10 @@ class CategoryController extends Controller
 
         $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($result['parent_id']) ? (int)$result['parent_id'] : 0)->orderby('level','ASC')->get();
 
-		foreach ($query as $result) {
+		foreach ($query as $resultcp) {
             DB::table($this->config['db_prefix'].'category_path')->insert([
                 'category_id'   =>  (int)$category_id,
-                'path_id'       =>  (int)$result->path_id,
+                'path_id'       =>  (int)$resultcp->path_id,
                 'level'         =>  (int)$level
             ]);
 
@@ -199,8 +199,6 @@ class CategoryController extends Controller
                 ]);
 			}
 		}
-
-
 
 
         DB::table($this->config['db_prefix'].'category_to_store')->insert([
