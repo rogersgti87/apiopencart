@@ -297,7 +297,7 @@ class CategoryController extends Controller
     }
 
 
-    public function update(Request $request, string $category_id)
+    public function update(Request $request)
     {
 
         $data = $request->getContent();
@@ -307,6 +307,10 @@ class CategoryController extends Controller
 
         foreach(json_decode($data , true) as $result){
 
+            if(!isset($result['category_id']) || $result['category_id'] == ''){
+                return response()->json('O campo category_id é obrigatório!', 422);
+            }
+
         if(!isset($result['name']) || $result['name'] == ''){
             return response()->json('O campo name é obrigatório!', 422);
         }
@@ -315,9 +319,9 @@ class CategoryController extends Controller
             return response()->json('O campo status é obrigatório!', 422);
         }
 
-        $category = DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->first();
+        $category = DB::table($this->config['db_prefix'].'category')->where('category_id',$result['category_id'])->first();
 
-        DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
+        DB::table($this->config['db_prefix'].'category')->where('category_id',$result['category_id'])->update([
             'parent_id'     =>  isset($result['parent_id'])   ? (int)$result['parent_id']   : $category->parent_id,
             'top'           =>  isset($result['top'])         ? (int)$result['top']         : $category->top,
             'column'        =>  isset($result['column'])      ? (int)$result['column']      : $category->column,
@@ -365,16 +369,16 @@ class CategoryController extends Controller
             $image = Image::make($path)->resize(1000, 1000);
             $image->save($path);
 
-            DB::table($this->config['db_prefix'].'category')->where('category_id',$category_id)->update([
+            DB::table($this->config['db_prefix'].'category')->where('category_id',$result['category_id'])->update([
                 'image'     =>  'catalog/'.$imageName
             ]);
 		}
 
-        DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$result['category_id'])->delete();
 
          //Insert data table oc_category_description
          DB::table($this->config['db_prefix'].'category_description')->insert([
-            'category_id'       =>  (int)$category_id,
+            'category_id'       =>  (int)$result['category_id'],
             'language_id'       =>  $this->config['language_id'],
             'name'              =>  $result['name'],
             'description'       =>  isset($result['description']) ? $result['description'] : $result['name'],
@@ -384,7 +388,7 @@ class CategoryController extends Controller
         ]);
 
 
-        $query = DB::table($this->config['db_prefix'].'category_path')->where('path_id',(int)$category_id)->orderby('level','ASC')->get();
+        $query = DB::table($this->config['db_prefix'].'category_path')->where('path_id',(int)$result['category_id'])->orderby('level','ASC')->get();
 
         if (count($query) > 0) {
 			foreach ($query as $category_path) {
@@ -421,7 +425,7 @@ class CategoryController extends Controller
 			}
 		} else {
 
-            DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_id)->delete();
+            DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$result['category_id'])->delete();
 
 			$level = 0;
 
@@ -430,7 +434,7 @@ class CategoryController extends Controller
 			foreach ($query as $resultcp) {
 
                 DB::table($this->config['db_prefix'].'category_path')->insert([
-                    'category_id'   => (int)$category_id,
+                    'category_id'   => (int)$result['category_id'],
                     'path_id'       =>  (int)$resultcp['path_id'],
                     'level'         =>  (int)$level
                 ]);
@@ -439,39 +443,39 @@ class CategoryController extends Controller
 			}
 
             DB::table($this->config['db_prefix'].'category_path')->updateOrInsert([
-                'category_id'   =>  (int)$category_id,
-                'path_id'       =>  (int)$category_id,
+                'category_id'   =>  (int)$result['category_id'],
+                'path_id'       =>  (int)$result['category_id'],
                 'level'         =>  (int)$level
             ]);
 		}
 
-        DB::table($this->config['db_prefix'].'category_filter')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'category_filter')->where('category_id',(int)$result['category_id'])->delete();
 
         if (isset($result['category_filter'])) {
 			foreach ($result['category_filter'] as $filter_id) {
                 DB::table($this->config['db_prefix'].'category_filter')->insert([
-                    'category_id'   =>  (int)$category_id,
+                    'category_id'   =>  (int)$result['category_id'],
                     'filter_id'     =>  (int)$filter_id
                 ]);
 			}
 		}
 
-        DB::table($this->config['db_prefix'].'category_to_store')->where('category_id',(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'category_to_store')->where('category_id',(int)$result['category_id'])->delete();
 
         DB::table($this->config['db_prefix'].'category_to_store')->insert([
-            'category_id'   =>  (int)$category_id,
+            'category_id'   =>  (int)$result['category_id'],
             'store_id'      =>  $this->config['store_id']
         ]);
 
 
 
-        DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$category_id)->delete();
+        DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$result['category_id'])->delete();
 
 		if (isset($result['category_seo_url']) && !empty($result['category_seo_url'])) {
             DB::table($this->config['db_prefix'].'seo_url')->insert([
                 'store_id'      =>  $this->config['store_id'],
                 'language_id'   =>  $this->config['language_id'],
-                'query'         =>  "category_id=".(int)$category_id,
+                'query'         =>  "category_id=".(int)$result['category_id'],
                 'keyword'       =>  $result['category_seo_url']
             ]);
 
@@ -480,13 +484,13 @@ class CategoryController extends Controller
         DB::table($this->config['db_prefix'].'seo_url')->insert([
             'store_id'      =>  $this->config['store_id'],
             'language_id'   =>  $this->config['language_id'],
-            'query'         =>  "category_id=".(int)$category_id,
+            'query'         =>  "category_id=".(int)$result['category_id'],
             'keyword'       =>  Str::slug($result['name'])
         ]);
 
         }
 
-        $response_categories[] = $category_id;
+        $response_categories[] = $result['category_id'];
 
     }
 

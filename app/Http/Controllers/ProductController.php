@@ -392,7 +392,7 @@ class ProductController extends Controller
     }
 
 
-    public function update(Request $request, string $product_id)
+    public function update(Request $request)
     {
 
         $data = $request->getContent();
@@ -400,6 +400,10 @@ class ProductController extends Controller
         $response_products = [];
 
         foreach(json_decode($data , true) as $result){
+
+        if(!isset($result['product_id']) || $result['product_id'] == ''){
+            return response()->json('O campo product_id é obrigatório!', 422);
+        }
 
         if(!isset($result['product_category']) || $result['product_category'] == ''){
             return response()->json('O campo product_category é obrigatório!', 422);
@@ -417,9 +421,9 @@ class ProductController extends Controller
             return response()->json('O campo status é obrigatório!', 422);
         }
 
-        $product = DB::table($this->config['db_prefix'].'product')->where('product_id',$product_id)->first();
+        $product = DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->first();
 
-        DB::table($this->config['db_prefix'].'product')->where('product_id',$product_id)->update([
+        DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->update([
             'model'                 =>  $result['model'],
             'sku'                   =>  isset($result['sku']) ? (int)$result['sku'] : $product->sku,
             'upc'                   =>  isset($result['upc']) ? (int)$result['upc'] : $product->upc,
@@ -489,15 +493,15 @@ class ProductController extends Controller
                 $image = Image::make($path)->resize(1000, 1000);
                 $image->save($path);
 
-                DB::table($this->config['db_prefix'].'product')->where('product_id',$product_id)->update([
+                DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->update([
                     'image'     =>  'catalog/'.$imageName
                 ]);
             }
 
-        DB::table($this->config['db_prefix'].'product_description')->where('product_id',$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_description')->where('product_id',$result['product_id'])->delete();
 
           DB::table($this->config['db_prefix'].'product_description')->insert([
-            'product_id'                =>  (int)$product_id,
+            'product_id'                =>  (int)$result['product_id'],
             'language_id'               =>  $this->config['language_id'],
             'name'                      =>  $result['name'],
             'description'               =>  isset($result['description']) ? $result['description'] : $result['name'],
@@ -507,10 +511,10 @@ class ProductController extends Controller
             'meta_keyword'              =>  isset($result['meta_keyword']) ? $result['meta_keyword'] : str_replace(" ",",",$result['name'])
         ]);
 
-        DB::table($this->config['db_prefix'].'product_to_store')->where('product_id',$product_id)->delete();
+        DB::table($this->config['db_prefix'].'product_to_store')->where('product_id',$result['product_id'])->delete();
 
         DB::table($this->config['db_prefix'].'product_to_store')->insert([
-            'product_id'                =>  (int)$product_id,
+            'product_id'                =>  (int)$result['product_id'],
             'store_id'                  =>  $this->config['store_id']
         ]);
 
@@ -519,10 +523,10 @@ class ProductController extends Controller
 
 
         if (isset($result['product_special'])) {
-            DB::table($this->config['db_prefix'].'product_special')->where('product_id',$product_id)->delete();
+            DB::table($this->config['db_prefix'].'product_special')->where('product_id',$result['product_id'])->delete();
 			foreach (DB::table($this->config['db_prefix'].'customer_group')->get() as $cg) {
                  DB::table($this->config['db_prefix'].'product_special')->insert([
-                    'product_id'                =>  (int)$product_id,
+                    'product_id'                =>  (int)$result['product_id'],
                     'customer_group_id'         =>  (int)$cg->customer_group_id,
                     'priority'                  =>  1,
                     'price'                     =>  (float)$result['product_special']['price'],
@@ -534,7 +538,7 @@ class ProductController extends Controller
 
 		if (isset($result['product_image'])) {
 
-            DB::table($this->config['db_prefix'].'product_image')->where('product_id',$product_id)->delete();
+            DB::table($this->config['db_prefix'].'product_image')->where('product_id',$result['product_id'])->delete();
 
 			foreach ($result['product_image'] as $key => $product) {
 
@@ -575,7 +579,7 @@ class ProductController extends Controller
                     $image->save($path);
 
                     DB::table($this->config['db_prefix'].'product_image')->insert([
-                        'product_id'    =>  (int)$product_id,
+                        'product_id'    =>  (int)$result['product_id'],
                         'image'         =>  'catalog/'.$imageName,
                         'sort_order'    =>  $key
                     ]);
@@ -584,7 +588,7 @@ class ProductController extends Controller
 		}
 
         if (isset($result['product_category'])) {
-            DB::table($this->config['db_prefix'].'product_to_category')->where('product_id',$product_id)->delete();
+            DB::table($this->config['db_prefix'].'product_to_category')->where('product_id',$result['product_id'])->delete();
 			foreach ($result['product_category'] as $product_id) {
                 DB::table($this->config['db_prefix'].'product_to_category')->insert([
                     'product_id'    =>  (int)$product_id,
@@ -594,13 +598,13 @@ class ProductController extends Controller
 			}
 		}
 
-    DB::table($this->config['db_prefix'].'seo_url')->where('query','product_id='.(int)$product_id)->delete();
+    DB::table($this->config['db_prefix'].'seo_url')->where('query','product_id='.(int)$result['product_id'])->delete();
 
   if (isset($result['product_seo_url']) && !empty($result['product_seo_url'])) {
             DB::table($this->config['db_prefix'].'seo_url')->insert([
                 'store_id'      =>  $this->config['store_id'],
                 'language_id'   =>  $this->config['language_id'],
-                'query'         =>  "product_id=".(int)$product_id,
+                'query'         =>  "product_id=".(int)$result['product_id'],
                 'keyword'       =>  $result['product_seo_url']
             ]);
 
@@ -609,13 +613,13 @@ class ProductController extends Controller
         DB::table($this->config['db_prefix'].'seo_url')->insert([
             'store_id'      =>  $this->config['store_id'],
             'language_id'   =>  $this->config['language_id'],
-            'query'         =>  "product_id=".(int)$product_id,
+            'query'         =>  "product_id=".(int)$result['product_id'],
             'keyword'       =>  Str::slug($result['name'])
         ]);
 
         }
 
-        $response_products[] = $product_id;
+        $response_products[] = $result['product_id'];
 
     }
         return response()->json(['status' => 'ok', 'data' => ['product_id' => $response_products]], 200);
