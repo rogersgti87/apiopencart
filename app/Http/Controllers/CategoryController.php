@@ -398,14 +398,14 @@ class CategoryController extends Controller
 
                 $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($data['parent_id']) ? (int)$data['parent_id'] : 0)->orderby('level','ASC')->get();
 
-				foreach ($query as $result) {
-					$path[] = $result->path_id;
+				foreach ($query as $resultpath1) {
+					$path[] = $resultpath1->path_id;
 				}
 
                 $query = DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_path->category_id)->orderby('level','ASC')->get();
 
-				foreach ($query as $result) {
-					$path[] = $result->path_id;
+				foreach ($query as $resultpath) {
+					$path[] = $resultpath->path_id;
 				}
 
 				$level = 0;
@@ -416,7 +416,7 @@ class CategoryController extends Controller
                             'category_id'   =>  (int)$category_path->category_id,
                         ],
                         [
-                        'category_id'   =>  (int)$result['category_id'],
+                        'category_id'   =>  (int)$category_path->category_id,
                         'path_id'       =>  (int)$path_id,
                         'level'         =>  (int)$level
                     ]);
