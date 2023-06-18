@@ -389,7 +389,7 @@ class CategoryController extends Controller
 
 
         $query = DB::table($this->config['db_prefix'].'category_path')->where('path_id',(int)$result['category_id'])->orderby('level','ASC')->get();
-         DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$result['category_id'])->delete();
+         
             
         if (count($query) > 0) {
 			foreach ($query as $category_path) {
@@ -416,7 +416,7 @@ class CategoryController extends Controller
                             'category_id'   =>  (int)$category_path->category_id,
                         ],
                         [
-                        'category_id'   =>  (int)$category_path->category_id,
+                        'category_id'   =>  (int)$result['category_id'],
                         'path_id'       =>  (int)$path_id,
                         'level'         =>  (int)$level
                     ]);
