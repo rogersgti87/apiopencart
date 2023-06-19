@@ -120,15 +120,15 @@ class CategoryController extends Controller
         if (isset($result['image'])) {
 
             $extension = explode('/', mime_content_type($result['image']))[1];
-            if($extension == 'jpeg'){
-                $extension == 'jpg';
-            } else if($extension == 'png'){
-                $extension == 'png';
-            } else if($extension == 'gif'){
-                $extension == 'gif';
-            }else{
-                $extension == 'jpg';
-            }
+            // if($extension == 'jpeg'){
+            //     $extension = 'jpg';
+            // } else if($extension == 'png'){
+            //     $extension = 'png';
+            // } else if($extension == 'gif'){
+            //     $extension = 'gif';
+            // }else{
+            //     $extension = 'jpg';
+            // }
 
             $image = str_replace('data:image/'.$extension.';base64,', '', $result['image']);
             $image = str_replace(' ', '+', $image);
@@ -335,15 +335,15 @@ class CategoryController extends Controller
 
             $extension = explode('/', mime_content_type($result['image']))[1];
 
-            if($extension == 'jpeg'){
-                $extension == 'jpg';
-            } else if($extension == 'png'){
-                $extension == 'png';
-            } else if($extension == 'gif'){
-                $extension == 'gif';
-            }else{
-                $extension == 'jpg';
-            }
+            // if($extension == 'jpeg'){
+            //     $extension = 'jpg';
+            // } else if($extension == 'png'){
+            //     $extension = 'png';
+            // } else if($extension == 'gif'){
+            //     $extension = 'gif';
+            // }else{
+            //     $extension = 'jpg';
+            // }
 
             $image = str_replace('data:image/'.$extension.';base64,', '', $result['image']);
             $image = str_replace(' ', '+', $image);
@@ -389,8 +389,8 @@ class CategoryController extends Controller
 
 
         $query = DB::table($this->config['db_prefix'].'category_path')->where('path_id',(int)$result['category_id'])->orderby('level','ASC')->get();
-         
-            
+
+
         if (count($query) > 0) {
 			foreach ($query as $category_path) {
                 DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_path->category_id)->where('level','<',(int)$category_path->level)->delete();

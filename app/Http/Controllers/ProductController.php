@@ -185,15 +185,15 @@ class ProductController extends Controller
 
     $extension = explode('/', mime_content_type($result['image']))[1];
 
-    if($extension == 'jpeg'){
-        $extension == 'jpg';
-    } else if($extension == 'png'){
-        $extension == 'png';
-    } else if($extension == 'gif'){
-        $extension == 'gif';
-    }else{
-        $extension == 'jpg';
-    }
+    // if($extension == 'jpeg'){
+    //     $extension = 'jpg';
+    // } else if($extension == 'png'){
+    //     $extension = 'png';
+    // } else if($extension == 'gif'){
+    //     $extension = 'gif';
+    // }else{
+    //     $extension = 'jpg';
+    // }
 
     $image = str_replace('data:image/'.$extension.';base64,', '', $result['image']);
     $image = str_replace(' ', '+', $image);
@@ -459,15 +459,15 @@ class ProductController extends Controller
 
             $extension = explode('/', mime_content_type($result['image']))[1];
 
-            if($extension == 'jpeg'){
-                $extension == 'jpg';
-            } else if($extension == 'png'){
-                $extension == 'png';
-            } else if($extension == 'gif'){
-                $extension == 'gif';
-            }else{
-                $extension == 'jpg';
-            }
+            // if($extension == 'jpeg'){
+            //     $extension = 'jpg';
+            // } else if($extension == 'png'){
+            //     $extension = 'png';
+            // } else if($extension == 'gif'){
+            //     $extension = 'gif';
+            // }else{
+            //     $extension = 'jpg';
+            // }
 
             $image = str_replace('data:image/'.$extension.';base64,', '', $result['image']);
             $image = str_replace(' ', '+', $image);
@@ -545,13 +545,13 @@ class ProductController extends Controller
                 $extension = explode('/', mime_content_type($product['image']))[1];
 
                 if($extension == 'jpeg'){
-                    $extension == 'jpg';
+                    $extension = 'jpg';
                 } else if($extension == 'png'){
-                    $extension == 'png';
+                    $extension = 'png';
                 } else if($extension == 'gif'){
-                    $extension == 'gif';
+                    $extension = 'gif';
                 }else{
-                    $extension == 'jpg';
+                    $extension = 'jpg';
                 }
 
                 $image = str_replace('data:image/'.$extension.';base64,', '', $product['image']);

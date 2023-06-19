@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ManufacturerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 
@@ -27,6 +28,13 @@ Route::get('/categories/{id}',[CategoryController::class,'show']);
 Route::post('/categories',[CategoryController::class,'store']);
 Route::put('/categories',[CategoryController::class,'update']);
 Route::delete('/categories/{category_id}',[CategoryController::class,'destroy']);
+
+
+Route::get('/manufacturers',[ManufacturerController::class,'index']);
+Route::get('/manufacturers/{id}',[ManufacturerController::class,'show']);
+Route::post('/manufacturers',[ManufacturerController::class,'store']);
+Route::put('/manufacturers',[ManufacturerController::class,'update']);
+Route::delete('/manufacturers/{brand_id}',[ManufacturerController::class,'destroy']);
 
 Route::get('/products',[ProductController::class,'index']);
 Route::get('/products/{id}',[ProductController::class,'show']);
