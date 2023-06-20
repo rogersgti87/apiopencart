@@ -260,15 +260,15 @@ class ProductController extends Controller
 
                 $extension = explode('/', mime_content_type($product['image']))[1];
 
-                if($extension == 'jpeg'){
-                    $extension == 'jpg';
-                } else if($extension == 'png'){
-                    $extension == 'png';
-                } else if($extension == 'gif'){
-                    $extension == 'gif';
-                }else{
-                    $extension == 'jpg';
-                }
+                // if($extension == 'jpeg'){
+                //     $extension == 'jpg';
+                // } else if($extension == 'png'){
+                //     $extension == 'png';
+                // } else if($extension == 'gif'){
+                //     $extension == 'gif';
+                // }else{
+                //     $extension == 'jpg';
+                // }
 
                 $image = str_replace('data:image/'.$extension.';base64,', '', $product['image']);
                 $image = str_replace(' ', '+', $image);
@@ -305,10 +305,10 @@ class ProductController extends Controller
 
 
 		if (isset($result['product_category'])) {
-			foreach ($result['product_category'] as $product_id) {
+			foreach ($result['product_category'] as $c_product_id) {
                 DB::table($this->config['db_prefix'].'product_to_category')->insert([
-                    'product_id'    =>  (int)$product_id,
-                    'product_id'   =>  (int)$product_id
+                    'product_id'    =>  (int)$c_product_id,
+                    'product_id'   =>  (int)$c_product_id
                 ]);
 
 			}
@@ -401,9 +401,9 @@ class ProductController extends Controller
 
         foreach(json_decode($data , true) as $result){
 
-        if(!isset($result['product_id']) || $result['product_id'] == ''){
-            return response()->json('O campo product_id é obrigatório!', 422);
-        }
+        // if(!isset($result['product_id']) || $result['product_id'] == ''){
+        //     return response()->json('O campo product_id é obrigatório!', 422);
+        // }
 
         if(!isset($result['product_category']) || $result['product_category'] == ''){
             return response()->json('O campo product_category é obrigatório!', 422);
@@ -544,15 +544,15 @@ class ProductController extends Controller
 
                 $extension = explode('/', mime_content_type($product['image']))[1];
 
-                if($extension == 'jpeg'){
-                    $extension = 'jpg';
-                } else if($extension == 'png'){
-                    $extension = 'png';
-                } else if($extension == 'gif'){
-                    $extension = 'gif';
-                }else{
-                    $extension = 'jpg';
-                }
+                // if($extension == 'jpeg'){
+                //     $extension = 'jpg';
+                // } else if($extension == 'png'){
+                //     $extension = 'png';
+                // } else if($extension == 'gif'){
+                //     $extension = 'gif';
+                // }else{
+                //     $extension = 'jpg';
+                // }
 
                 $image = str_replace('data:image/'.$extension.';base64,', '', $product['image']);
                 $image = str_replace(' ', '+', $image);
@@ -589,10 +589,10 @@ class ProductController extends Controller
 
         if (isset($result['product_category'])) {
             DB::table($this->config['db_prefix'].'product_to_category')->where('product_id',$result['product_id'])->delete();
-			foreach ($result['product_category'] as $product_id) {
+			foreach ($result['product_category'] as $c_product_id) {
                 DB::table($this->config['db_prefix'].'product_to_category')->insert([
-                    'product_id'    =>  (int)$product_id,
-                    'product_id'   =>  (int)$product_id
+                    'product_id'    =>  (int)$c_product_id,
+                    'product_id'   =>  (int)$c_product_id
                 ]);
 
 			}
