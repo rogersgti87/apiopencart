@@ -131,9 +131,9 @@ class ProductController extends Controller
 
         foreach(json_decode($data , true) as $result){
 
-        if(!isset($result['product_category']) || $result['product_category'] == ''){
-            return response()->json('O campo product_category é obrigatório!', 422);
-        }
+        // if(!isset($result['product_category']) || $result['product_category'] == ''){
+        //     return response()->json('O campo product_category é obrigatório!', 422);
+        // }
 
         if(!isset($result['model']) || $result['model'] == ''){
             return response()->json('O campo model é obrigatório!', 422);
