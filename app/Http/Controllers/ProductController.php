@@ -306,7 +306,7 @@ class ProductController extends Controller
 		if (isset($result['product_category'])) {
 			foreach ($result['product_category'] as $p_category_id) {
                 DB::table($this->config['db_prefix'].'product_to_category')->insert([
-                    'product_id'    =>  (int)$result['product_id'],
+                    'product_id'    =>  (int)$product_id,
                     'category_id'   =>  (int)$p_category_id
                 ]);
 
@@ -513,7 +513,7 @@ class ProductController extends Controller
         DB::table($this->config['db_prefix'].'product_to_store')->where('product_id',$result['product_id'])->delete();
 
         DB::table($this->config['db_prefix'].'product_to_store')->insert([
-            'product_id'                =>  (int)$result['product_id'],
+            'product_id'                =>  (int)$product_id,
             'store_id'                  =>  $this->config['store_id']
         ]);
 
