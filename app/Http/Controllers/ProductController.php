@@ -129,7 +129,7 @@ class ProductController extends Controller
 
         $response_products = [];
 
-        foreach(json_decode($data , true) as $result){        
+        foreach(json_decode($data , true) as $result){
         if(!isset($result['product_category']) || $result['product_category'] == ''){
             return response()->json('O campo product_category é obrigatório!', 422);
         }
@@ -159,7 +159,7 @@ class ProductController extends Controller
             'minimum'               =>  isset($result['minimum']) ? (int)$result['minimum'] : 1,
             'subtract'              =>  isset($result['subtract']) ? (int)$result['subtract'] : 1,
             'stock_status_id'       =>  isset($result['stock_status_id']) ? (int)$result['stock_status_id'] : 7,
-            'date_available'        =>  isset($result['date_available']) ? (int)$result['date_available'] : date('Y-m-d'),
+            'date_available'        =>  isset($result['date_available']) ? (int)$result['date_available'] : date('Y-m-d', strtotime('-1 day')),
             'manufacturer_id'       =>  isset($result['manufacturer_id']) ? (int)$result['manufacturer_id'] : 0,
             'shipping'              =>  isset($result['shipping']) ? (int)$result['shipping'] : 1,
             'price'                 =>  isset($result['price']) ? (float)$result['price'] : 0.00,
