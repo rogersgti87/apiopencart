@@ -182,21 +182,11 @@ class ProductController extends Controller
  //update image table category
  if (isset($result['image'])) {
 
-    $extension = explode('/', mime_content_type($result['image']))[1];
+        $base64 = 'base64,'.$result['image'];
+        $base64_str = substr($base64, strpos($base64, ",")+1);
+        $image = base64_decode($base64_str);
 
-    // if($extension == 'jpeg'){
-    //     $extension = 'jpg';
-    // } else if($extension == 'png'){
-    //     $extension = 'png';
-    // } else if($extension == 'gif'){
-    //     $extension = 'gif';
-    // }else{
-    //     $extension = 'jpg';
-    // }
-
-    $image = str_replace('data:image/'.$extension.';base64,', '', $result['image']);
-    $image = str_replace(' ', '+', $image);
-    $imageName = Str::slug($result['name']) . '.'.$extension;
+        $imageName = Str::slug($result['name']) . '.jpg';
         if(isset($result['path_image'])){
             if(!file_exists($this->config['path_image'].$result['path_image'])){
                 \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
@@ -214,7 +204,7 @@ class ProductController extends Controller
             $path = $this->config['path_image'] . $imageName;
         }
 
-        $input = \File::put($path, base64_decode($image));
+        $input = \File::put($path, $image);
         $image = Image::make($path)->resize(1000, 1000);
         $image->save($path);
 
@@ -257,42 +247,31 @@ class ProductController extends Controller
 		if (isset($result['product_image'])) {
 			foreach ($result['product_image'] as $key => $product) {
 
-                $extension = explode('/', mime_content_type($product['image']))[1];
+                $base64 = 'base64,'.$product['image'];
+                $base64_str = substr($base64, strpos($base64, ",")+1);
+                $image = base64_decode($base64_str);
 
-                // if($extension == 'jpeg'){
-                //     $extension == 'jpg';
-                // } else if($extension == 'png'){
-                //     $extension == 'png';
-                // } else if($extension == 'gif'){
-                //     $extension == 'gif';
-                // }else{
-                //     $extension == 'jpg';
-                // }
-
-                $image = str_replace('data:image/'.$extension.';base64,', '', $product['image']);
-                $image = str_replace(' ', '+', $image);
-                $imageName = Str::slug($result['name'].$key) .'.'. $extension;
-                    if(isset($result['path_image'])){
-                        if(!file_exists($this->config['path_image'].$result['path_image'])){
-                            \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
-                        }
-                        if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
-                            unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
-                        }
-                        $folder = isset($result['path_image']) ? $result['path_image'] : '';
-                        $path = $this->config['path_image'] . $folder.'/'. $imageName;
-                        $imageName = $folder.'/'.$imageName;
-                    }else{
-                        if(file_exists($this->config['path_image'].'/'.$imageName)){
-                            unlink($this->config['path_image'].'/'.$imageName);
-                        }
-                        $path = $this->config['path_image'] . $imageName;
+                $imageName = Str::slug($result['name']) . '.jpg';
+                if(isset($result['path_image'])){
+                    if(!file_exists($this->config['path_image'].$result['path_image'])){
+                        \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
                     }
+                    if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
+                        unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
+                    }
+                    $folder = isset($result['path_image']) ? $result['path_image'] : '';
+                    $path = $this->config['path_image'] . $folder.'/'. $imageName;
+                    $imageName = $folder.'/'.$imageName;
+                }else{
+                    if(file_exists($this->config['path_image'].'/'.$imageName)){
+                        unlink($this->config['path_image'].'/'.$imageName);
+                    }
+                    $path = $this->config['path_image'] . $imageName;
+                }
 
-                    $input = \File::put($path, base64_decode($image));
-                    $image = Image::make($path)->resize(1000, 1000);
-                    $image->save($path);
-
+                $input = \File::put($path, $image);
+                $image = Image::make($path)->resize(1000, 1000);
+                $image->save($path);
                     DB::table($this->config['db_prefix'].'product_image')->insert([
                         'product_id'    =>  (int)$product_id,
                         'image'         =>  'catalog/'.$imageName,
@@ -456,41 +435,31 @@ class ProductController extends Controller
 
         if (isset($result['image'])) {
 
-            $extension = explode('/', mime_content_type($result['image']))[1];
+            $base64 = 'base64,'.$result['image'];
+            $base64_str = substr($base64, strpos($base64, ",")+1);
+            $image = base64_decode($base64_str);
 
-            // if($extension == 'jpeg'){
-            //     $extension = 'jpg';
-            // } else if($extension == 'png'){
-            //     $extension = 'png';
-            // } else if($extension == 'gif'){
-            //     $extension = 'gif';
-            // }else{
-            //     $extension = 'jpg';
-            // }
-
-            $image = str_replace('data:image/'.$extension.';base64,', '', $result['image']);
-            $image = str_replace(' ', '+', $image);
-            $imageName = Str::slug($result['name']) . '.'.$extension;
-                if(isset($result['path_image'])){
-                    if(!file_exists($this->config['path_image'].$result['path_image'])){
-                        \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
-                    }
-                    if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
-                        unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
-                    }
-                    $folder = isset($result['path_image']) ? $result['path_image'] : '';
-                    $path = $this->config['path_image'] . $folder.'/'. $imageName;
-                    $imageName = $folder.'/'.$imageName;
-                }else{
-                    if(file_exists($this->config['path_image'].'/'.$imageName)){
-                        unlink($this->config['path_image'].'/'.$imageName);
-                    }
-                    $path = $this->config['path_image'] . $imageName;
+            $imageName = Str::slug($result['name']) . '.jpg';
+            if(isset($result['path_image'])){
+                if(!file_exists($this->config['path_image'].$result['path_image'])){
+                    \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
                 }
+                if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
+                }
+                $folder = isset($result['path_image']) ? $result['path_image'] : '';
+                $path = $this->config['path_image'] . $folder.'/'. $imageName;
+                $imageName = $folder.'/'.$imageName;
+            }else{
+                if(file_exists($this->config['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].'/'.$imageName);
+                }
+                $path = $this->config['path_image'] . $imageName;
+            }
 
-                $input = \File::put($path, base64_decode($image));
-                $image = Image::make($path)->resize(1000, 1000);
-                $image->save($path);
+            $input = \File::put($path, $image);
+            $image = Image::make($path)->resize(1000, 1000);
+            $image->save($path);
 
                 DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->update([
                     'image'     =>  'catalog/'.$imageName
@@ -541,41 +510,31 @@ class ProductController extends Controller
 
 			foreach ($result['product_image'] as $key => $product) {
 
-                $extension = explode('/', mime_content_type($product['image']))[1];
+                $base64 = 'base64,'.$product['image'];
+                $base64_str = substr($base64, strpos($base64, ",")+1);
+                $image = base64_decode($base64_str);
 
-                // if($extension == 'jpeg'){
-                //     $extension = 'jpg';
-                // } else if($extension == 'png'){
-                //     $extension = 'png';
-                // } else if($extension == 'gif'){
-                //     $extension = 'gif';
-                // }else{
-                //     $extension = 'jpg';
-                // }
-
-                $image = str_replace('data:image/'.$extension.';base64,', '', $product['image']);
-                $image = str_replace(' ', '+', $image);
-                $imageName = Str::slug($result['name'].$key) .'.'. $extension;
-                    if(isset($result['path_image'])){
-                        if(!file_exists($this->config['path_image'].$result['path_image'])){
-                            \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
-                        }
-                        if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
-                            unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
-                        }
-                        $folder = isset($result['path_image']) ? $result['path_image'] : '';
-                        $path = $this->config['path_image'] . $folder.'/'. $imageName;
-                        $imageName = $folder.'/'.$imageName;
-                    }else{
-                        if(file_exists($this->config['path_image'].'/'.$imageName)){
-                            unlink($this->config['path_image'].'/'.$imageName);
-                        }
-                        $path = $this->config['path_image'] . $imageName;
+                $imageName = Str::slug($result['name']) . '.jpg';
+                if(isset($result['path_image'])){
+                    if(!file_exists($this->config['path_image'].$result['path_image'])){
+                        \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
                     }
+                    if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
+                        unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
+                    }
+                    $folder = isset($result['path_image']) ? $result['path_image'] : '';
+                    $path = $this->config['path_image'] . $folder.'/'. $imageName;
+                    $imageName = $folder.'/'.$imageName;
+                }else{
+                    if(file_exists($this->config['path_image'].'/'.$imageName)){
+                        unlink($this->config['path_image'].'/'.$imageName);
+                    }
+                    $path = $this->config['path_image'] . $imageName;
+                }
 
-                    $input = \File::put($path, base64_decode($image));
-                    $image = Image::make($path)->resize(1000, 1000);
-                    $image->save($path);
+                $input = \File::put($path, $image);
+                $image = Image::make($path)->resize(1000, 1000);
+                $image->save($path);
 
                     DB::table($this->config['db_prefix'].'product_image')->insert([
                         'product_id'    =>  (int)$result['product_id'],
