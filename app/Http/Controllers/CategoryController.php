@@ -446,7 +446,8 @@ class CategoryController extends Controller
 
             DB::table($this->config['db_prefix'].'category_path')->updateOrInsert([
                 'category_id'   =>  (int)$result['category_id'],
-                'path_id'       =>  (int)$result['category_id'],
+                //'path_id'       =>  (int)$result['category_id'],
+                'path_id'       =>  (int)$result['path_id'],
                 'level'         =>  (int)$level
             ]);
 		}
