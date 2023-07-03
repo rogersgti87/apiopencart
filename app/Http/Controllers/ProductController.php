@@ -600,7 +600,8 @@ class ProductController extends Controller
         }
 
 
-        $product = DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->first();
+        $product                = DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->first();
+        $product_description    = DB::table($this->config['db_prefix'].'product_description')->where('product_id',$result['product_id'])->first();
 
         DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->update([
             'quantity'              =>  isset($result['quantity']) ? (int)$result['quantity'] : $product->quantity,
@@ -630,7 +631,7 @@ class ProductController extends Controller
             $base64_str = substr($base64, strpos($base64, ",")+1);
             $image = base64_decode($base64_str);
 
-            $imageName = Str::slug($result['name']) . '.jpg';
+            $imageName = Str::slug($product_description->name) . '.jpg';
             if(isset($result['path_image'])){
                 if(!file_exists($this->config['path_image'].$result['path_image'])){
                     \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
@@ -667,7 +668,7 @@ class ProductController extends Controller
                 $base64_str = substr($base64, strpos($base64, ",")+1);
                 $image = base64_decode($base64_str);
 
-                $imageName = Str::slug($result['name']) . '.jpg';
+                $imageName = Str::slug($product_description->name) . '.jpg';
                 if(isset($result['path_image'])){
                     if(!file_exists($this->config['path_image'].$result['path_image'])){
                         \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
