@@ -585,6 +585,131 @@ class ProductController extends Controller
     }
 
 
+
+    public function updateCustom(Request $request)
+    {
+
+        $data = $request->getContent();
+
+        $response_products = [];
+
+        foreach(json_decode($data , true) as $result){
+
+        if(!isset($result['product_id']) || $result['product_id'] == ''){
+            return response()->json('O campo product_id é obrigatório!', 422);
+        }
+
+
+        $product = DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->first();
+
+        DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->update([
+            'quantity'              =>  isset($result['quantity']) ? (int)$result['quantity'] : $product->quantity,
+            'price'                 =>  isset($result['price']) ? (float)$result['price'] : $product->price,
+            'date_modified'         =>  NOW()
+        ]);
+
+
+        if (isset($result['product_special'])) {
+            DB::table($this->config['db_prefix'].'product_special')->where('product_id',$result['product_id'])->delete();
+			foreach (DB::table($this->config['db_prefix'].'customer_group')->get() as $cg) {
+                 DB::table($this->config['db_prefix'].'product_special')->insert([
+                    'product_id'                =>  (int)$result['product_id'],
+                    'customer_group_id'         =>  (int)$cg->customer_group_id,
+                    'priority'                  =>  1,
+                    'price'                     =>  (float)$result['product_special']['price'],
+                    'date_start'                =>  $result['product_special']['date_start'],
+                    'date_end'                  =>  $result['product_special']['date_end']
+                ]);
+			}
+		}
+
+
+        if (isset($result['image'])) {
+
+            $base64 = 'base64,'.$result['image'];
+            $base64_str = substr($base64, strpos($base64, ",")+1);
+            $image = base64_decode($base64_str);
+
+            $imageName = Str::slug($result['name']) . '.jpg';
+            if(isset($result['path_image'])){
+                if(!file_exists($this->config['path_image'].$result['path_image'])){
+                    \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
+                }
+                if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
+                }
+                $folder = isset($result['path_image']) ? $result['path_image'] : '';
+                $path = $this->config['path_image'] . $folder.'/'. $imageName;
+                $imageName = $folder.'/'.$imageName;
+            }else{
+                if(file_exists($this->config['path_image'].'/'.$imageName)){
+                    unlink($this->config['path_image'].'/'.$imageName);
+                }
+                $path = $this->config['path_image'] . $imageName;
+            }
+
+            $input = \File::put($path, $image);
+            $image = Image::make($path)->resize(1000, 1000);
+            $image->save($path);
+
+                DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->update([
+                    'image'     =>  'catalog/'.$imageName
+                ]);
+            }
+
+        if (isset($result['product_image'])) {
+
+            DB::table($this->config['db_prefix'].'product_image')->where('product_id',$result['product_id'])->delete();
+
+			foreach ($result['product_image'] as $key => $product) {
+
+                $base64 = 'base64,'.$product['image'];
+                $base64_str = substr($base64, strpos($base64, ",")+1);
+                $image = base64_decode($base64_str);
+
+                $imageName = Str::slug($result['name']) . '.jpg';
+                if(isset($result['path_image'])){
+                    if(!file_exists($this->config['path_image'].$result['path_image'])){
+                        \File::makeDirectory($this->config['path_image'].$result['path_image'], $mode = 0777, true, true);
+                    }
+                    if(file_exists($this->config['path_image'].$result['path_image'].'/'.$imageName)){
+                        unlink($this->config['path_image'].$result['path_image'].'/'.$imageName);
+                    }
+                    $folder = isset($result['path_image']) ? $result['path_image'] : '';
+                    $path = $this->config['path_image'] . $folder.'/'. $imageName;
+                    $imageName = $folder.'/'.$imageName;
+                }else{
+                    if(file_exists($this->config['path_image'].'/'.$imageName)){
+                        unlink($this->config['path_image'].'/'.$imageName);
+                    }
+                    $path = $this->config['path_image'] . $imageName;
+                }
+
+                $input = \File::put($path, $image);
+                $image = Image::make($path)->resize(1000, 1000);
+                $image->save($path);
+
+                    DB::table($this->config['db_prefix'].'product_image')->insert([
+                        'product_id'    =>  (int)$result['product_id'],
+                        'image'         =>  'catalog/'.$imageName,
+                        'sort_order'    =>  $key
+                    ]);
+
+			}
+		}
+
+
+
+        $response_products[] = $result['product_id'];
+
+    }
+        return response()->json(['status' => 'ok', 'data' => ['product_id' => $response_products]], 200);
+
+
+
+
+    }
+
     public function destroy(string $product_id)
     {
 

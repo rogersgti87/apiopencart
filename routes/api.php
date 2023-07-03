@@ -40,6 +40,7 @@ Route::get('/products',[ProductController::class,'index']);
 Route::get('/products/{id}',[ProductController::class,'show']);
 Route::post('/products',[ProductController::class,'store']);
 Route::put('/products',[ProductController::class,'update']);
+Route::put('/products-custom',[ProductController::class,'updateCustom']);
 Route::delete('/products/{product_id}',[ProductController::class,'destroy']);
 
 Route::get('/orders',[OrderController::class,'index']);
