@@ -383,26 +383,26 @@ class ProductController extends Controller
             return response()->json('O campo product_id é obrigatório!', 422);
         }
 
-        if(!isset($result['product_category']) || $result['product_category'] == ''){
-            return response()->json('O campo product_category é obrigatório!', 422);
-        }
+        // if(!isset($result['product_category']) || $result['product_category'] == ''){
+        //     return response()->json('O campo product_category é obrigatório!', 422);
+        // }
 
-        if(!isset($result['model']) || $result['model'] == ''){
-            return response()->json('O campo model é obrigatório!', 422);
-        }
+        // if(!isset($result['model']) || $result['model'] == ''){
+        //     return response()->json('O campo model é obrigatório!', 422);
+        // }
 
-        if(!isset($result['name']) || $result['name'] == ''){
-            return response()->json('O campo name é obrigatório!', 422);
-        }
+        // if(!isset($result['name']) || $result['name'] == ''){
+        //     return response()->json('O campo name é obrigatório!', 422);
+        // }
 
-        if(!isset($result['status']) || $result['status'] == ''){
-            return response()->json('O campo status é obrigatório!', 422);
-        }
+        // if(!isset($result['status']) || $result['status'] == ''){
+        //     return response()->json('O campo status é obrigatório!', 422);
+        // }
 
         $product = DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->first();
 
         DB::table($this->config['db_prefix'].'product')->where('product_id',$result['product_id'])->update([
-            'model'                 =>  $result['model'],
+            'model'                 =>  isset($result['model']) ? $result['model'] : $product->model,
             'sku'                   =>  isset($result['sku']) ? (int)$result['sku'] : $product->sku,
             'upc'                   =>  isset($result['upc']) ? (int)$result['upc'] : $product->upc,
             'ean'                   =>  isset($result['ean']) ? (int)$result['ean'] : $product->ean,
@@ -425,7 +425,7 @@ class ProductController extends Controller
             'width'                 =>  isset($result['width']) ? (float)$result['width'] : $product->width,
             'height'                =>  isset($result['height']) ? (float)$result['height'] : $product->height,
             'length_class_id'       =>  isset($result['length_class_id']) ? (int)$result['length_class_id'] : $product->length_class_id,
-            'status'                =>  (int)$result['status'],
+            'status'                =>  isset($result['status']) ? (int)$result['status'] : $product->status,
             'tax_class_id'          =>  isset($result['tax_class_id']) ? (int)$result['tax_class_id'] : $product->tax_class_id,
             'sort_order'            =>  isset($result['sort_order']) ? (int)$result['sort_order'] : $product->sort_order,
             'date_modified'         =>  NOW()
@@ -482,7 +482,7 @@ class ProductController extends Controller
         DB::table($this->config['db_prefix'].'product_to_store')->where('product_id',$result['product_id'])->delete();
 
         DB::table($this->config['db_prefix'].'product_to_store')->insert([
-            'product_id'                =>  (int)$product_id,
+            'product_id'                =>  (int)$result['product_id'],
             'store_id'                  =>  $this->config['store_id']
         ]);
 
