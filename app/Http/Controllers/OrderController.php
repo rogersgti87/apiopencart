@@ -155,7 +155,6 @@ class OrderController extends Controller
             }
 
             foreach($data['data'] as $key => $result){
-                dd($result);
                 $data['data'][$key] = [
                     'order'  =>  [
                         'order_id'              => $result->order_id,
@@ -171,9 +170,9 @@ class OrderController extends Controller
                     ],
                     'customer'  =>  [
                         'cpf'                   =>  $result->cpf,
-                        'cnpj'                  =>  $result->cnpj,
-                        'inscricao_estadual'    =>  $result->inscricao_estadual,
-                        'razao_social'          =>  $result->razao_social,
+                        'cnpj'                  =>  isset($result->cnpj) ? $result->cnpj : null,
+                        'inscricao_estadual'    =>  isset($result->inscricao_estadual) ? $result->inscricao_estadual : null,
+                        'razao_social'          =>  isset($result->razao_social) ? $result->razao_social : null,
                         'firstname'             =>  $result->firstname,
                         'lastname'              =>  $result->lastname,
                         'email'                 =>  $result->email,
