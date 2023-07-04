@@ -41,7 +41,6 @@ class OrderController extends Controller
         ->select('cfd.custom_field_id', 'cfd.name as field', 'cfvd.name as value', 'cfvd.custom_field_value_id')
         ->get();
 
-        dd($oc_custom_fields);
 
         $oc_order_total = DB::table($this->config['db_prefix'].'order_total')->get();
 
