@@ -155,6 +155,7 @@ class OrderController extends Controller
             }
 
             foreach($data['data'] as $key => $result){
+                dd($result);
                 $data['data'][$key] = [
                     'order'  =>  [
                         'order_id'              => $result->order_id,
