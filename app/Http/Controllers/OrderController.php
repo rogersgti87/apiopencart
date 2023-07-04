@@ -169,7 +169,7 @@ class OrderController extends Controller
                         'total'                 =>  $result->total,
                     ],
                     'customer'  =>  [
-                        'cpf'                   =>  $result->cpf,
+                        'cpf'                   =>  isset($result->cpf) ? $result->cpf : null,
                         'cnpj'                  =>  isset($result->cnpj) ? $result->cnpj : null,
                         'inscricao_estadual'    =>  isset($result->inscricao_estadual) ? $result->inscricao_estadual : null,
                         'razao_social'          =>  isset($result->razao_social) ? $result->razao_social : null,
