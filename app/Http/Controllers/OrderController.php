@@ -32,7 +32,7 @@ class OrderController extends Controller
         'order_id','invoice_no','invoice_prefix','firstname','lastname','email','telephone','payment_method',
         'shipping_firstname','shipping_lastname','shipping_address_1','shipping_address_2','shipping_city',
         'shipping_postcode','shipping_country','shipping_zone','shipping_method','shipping_code','total',
-        'order_status_id','date_added','date_modified','custom_field','shipping_custom_field'
+        'order_status_id','date_added','date_modified','custom_field','shipping_custom_field','comment',
 
         ];
 
@@ -144,8 +144,18 @@ class OrderController extends Controller
                         }
 
                          if($ocf->field == 'Número'){
-                            foreach($shipping_custom_fields as $scf){
-                                $data['data'][$key]->numero = $scf;
+                            foreach($shipping_custom_fields as $key_number => $scf){
+                                if($key_number == 3){
+                                    $data['data'][$key]->numero = isset($scf) ? $scf : null;
+                                }
+                            }
+                        }
+
+                        if($ocf->field == 'Complemento'){
+                            foreach($shipping_custom_fields as $key_number => $scf){
+                                if($key_number == 9){
+                                    $data['data'][$key]->complemento = isset($scf) ? $scf : null;
+                                }
                             }
                         }
                     }
@@ -167,6 +177,7 @@ class OrderController extends Controller
                         'sub_total'             =>  $result->sub_total,
                         'shipping'              =>  $result->shipping,
                         'total'                 =>  $result->total,
+                        'comment'               => $result->comment,
                     ],
                     'customer'  =>  [
                         'cpf'                   =>  isset($result->cpf) ? $result->cpf : null,
@@ -187,6 +198,7 @@ class OrderController extends Controller
                         'shipping_address_1'    =>  $result->shipping_address_1,
                         'shipping_address_2'    =>  $result->shipping_address_2,
                         'numero'                =>  $result->numero,
+                        'complemento'           =>  $result->complemento,
                         'shipping_city'         =>  $result->shipping_city,
                         'shipping_country'      =>  $result->shipping_country,
                         'shipping_zone'         =>  $result->shipping_zone,
