@@ -388,11 +388,7 @@ class CategoryController extends Controller
         ]);
 
 
-        DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$result['category_id'])->delete();
-
         $query = DB::table($this->config['db_prefix'].'category_path')->where('path_id',(int)$result['category_id'])->orderby('level','ASC')->get();
-
-        return $query;
 
         if (count($query) > 0) {
 			foreach ($query as $category_path) {
@@ -414,22 +410,31 @@ class CategoryController extends Controller
 				$level = 0;
 
 				foreach ($path as $path_id) {
-                    DB::table($this->config['db_prefix'].'category_path')->updateOrInsert(
-                        [
+                    $query_path = DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_path->category_id)->get();
+                    if($query_path){
+
+                        $query_path->update(
+                            [
+                                'category_id'   =>  (int)$category_path->category_id
+                            ]);
+
+                    }else{
+                        DB::table($this->config['db_prefix'].'category_path')->insert(
+                            [
                             'category_id'   =>  (int)$category_path->category_id,
-                        ],
-                        [
-                        'category_id'   =>  (int)$category_path->category_id,
-                        'path_id'       =>  (int)$path_id,
-                        'level'         =>  (int)$level
-                    ]);
+                            'path_id'       =>  (int)$path_id,
+                            'level'         =>  (int)$level
+                        ]);
+                    }
+
+
 
 					$level++;
 				}
 			}
 		} else {
 
-            //DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$result['category_id'])->delete();
+            DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$result['category_id'])->delete();
 
 			$level = 0;
 
