@@ -451,11 +451,22 @@ class CategoryController extends Controller
 				$level++;
 			}
 
-            DB::table($this->config['db_prefix'].'category_path')->updateOrInsert([
-                'category_id'   =>  (int)$result['category_id'],
-                'path_id'       =>  (int)$result['category_id'],
-                'level'         =>  (int)$level
-            ]);
+            $query_path_2 = DB::table($this->config['db_prefix'].'category_path')->where('category_id',isset($result['parent_id']) ? (int)$result['parent_id'] : 0)->get();
+
+            if($query_path_2){
+                DB::table($this->config['db_prefix'].'category_path')->update([
+                    'category_id'   =>  (int)$result['category_id'],
+                    'path_id'       =>  (int)$result['category_id'],
+                    'level'         =>  (int)$level
+                ]);
+            }else{
+                DB::table($this->config['db_prefix'].'category_path')->insert([
+                    'category_id'   =>  (int)$result['category_id'],
+                    'path_id'       =>  (int)$result['category_id'],
+                    'level'         =>  (int)$level
+                ]);
+            }
+
 		}
 
         DB::table($this->config['db_prefix'].'category_filter')->where('category_id',(int)$result['category_id'])->delete();
