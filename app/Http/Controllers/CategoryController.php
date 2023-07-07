@@ -413,7 +413,7 @@ class CategoryController extends Controller
                     $query_path = DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_path->category_id)->get();
                     if($query_path){
 
-                        $query_path->update(
+                        DB::table($this->config['db_prefix'].'category_path')->where('category_id',(int)$category_path->category_id)->update(
                             [
                                 'category_id'   =>  (int)$category_path->category_id
                             ]);
