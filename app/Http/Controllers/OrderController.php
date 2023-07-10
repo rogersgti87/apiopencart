@@ -167,7 +167,8 @@ class OrderController extends Controller
             foreach($data['data'] as $key => $result){
                 $data['data'][$key] = [
                     'order'  =>  [
-                        'order_id'              => $result->order_id,
+                        'order_id'              =>  $result->order_id,
+                        'order_status_id'       =>  $result->order_status_id,
                         'invoice_no'            =>  $result->invoice_no,
                         'invoice_no'            =>  $result->invoice_no,
                         'invoice_prefix'        =>  $result->invoice_prefix,
@@ -177,7 +178,7 @@ class OrderController extends Controller
                         'sub_total'             =>  $result->sub_total,
                         'shipping'              =>  $result->shipping,
                         'total'                 =>  $result->total,
-                        'comment'               => $result->comment,
+                        'comment'               =>  $result->comment,
                     ],
                     'customer'  =>  [
                         'cpf'                   =>  isset($result->cpf) ? $result->cpf : null,
