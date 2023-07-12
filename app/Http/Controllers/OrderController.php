@@ -26,10 +26,11 @@ class OrderController extends Controller
         $data = $request->getContent();
         $result = json_decode($data , true);
 
-        $field  = isset($result->field) ? $result->field : null;
-        $op     = isset($result->op) ? $result->op : null;
-        $value  = isset($result->value) ? $result->value : null;
-        $status = isset($result->status) ? $result->status : null;
+        //$field  = isset($result->field) ? $result->field : null;
+        //$op     = isset($result->op) ? $result->op : null;
+        //$value  = isset($result->value) ? $result->value : null;
+
+        //$status = isset($result->status) ? $result->status : null;
 
 
         $columns = [
@@ -55,15 +56,15 @@ class OrderController extends Controller
                             ->get();
 
 
-        if($field && $op && $value){
-            if($op == 'like'){
-                $newValue = "'%$value%'";
+        if($result->field && $result->op && $result->value){
+            if($result->op == 'like'){
+                $newValue = "'%$result->value%'";
             }else{
-                $newValue = "'$value'";
+                $newValue = "'$result->value'";
             }
 
-            if(isset($status)){
-                $newStatus = "and order_status_id = '$status'";
+            if(isset($result->status)){
+                $newStatus = "and order_status_id = '$result->status'";
             } else {
                 $newStatus = "and order_status_id > 0";
             }
@@ -71,14 +72,14 @@ class OrderController extends Controller
 
             $data  = DB::table($this->config['db_prefix'].'order')
                         ->select($columns)
-                        ->whereraw("$field $op $newValue $newStatus")
+                        ->whereraw("$result->field  $result->op $newValue $newStatus")
                         ->orderby('date_modified','DESC')
                         ->paginate(20);
 
             } else {
 
-                if(isset($status)){
-                    $newStatus = " order_status_id = '$status'";
+                if(isset($result->status)){
+                    $newStatus = " order_status_id = '$result->status'";
                 } else {
                     $newStatus = ' order_status_id > 0';
                 }
