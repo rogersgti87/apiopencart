@@ -63,10 +63,8 @@ class OrderController extends Controller
 
             if(isset($status)){
                 $newStatus = "and order_status_id = '$status'";
-                dd($field,$op,$value,$newStatus,'existe status');
             } else {
                 $newStatus = "and order_status_id > 0";
-                dd($field,$op,$value,$newStatus,'nao existe status');
             }
 
 
@@ -75,6 +73,8 @@ class OrderController extends Controller
                         ->whereraw("$field  $op $newValue $newStatus")
                         ->orderby('date_modified','DESC')
                         ->paginate(20);
+
+            dd($data);
 
             } else {
                 if(isset($status)){
