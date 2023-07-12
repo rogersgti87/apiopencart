@@ -243,7 +243,7 @@ class OrderController extends Controller
             "key"       => $this->config['api_key']
         ]);
 
-        return $response->body();
+        dd($response->body());
 
 
     }
