@@ -55,11 +55,11 @@ class OrderController extends Controller
 
 
         if($field && $op && $value){
-            dd($field,$op,$value);
             if($op == 'like'){
                 $newValue = "'%$value%'";
             }else{
                 $newValue = "'$value'";
+                dd($field,$op,$value,$newValue);
             }
 
             if(isset($status)){
