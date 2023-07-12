@@ -31,8 +31,6 @@ class OrderController extends Controller
         $value  = isset($result['value']) ? $result['value'] : null;
         $status = isset($result['status']) ? $result['status'] : null;
 
-        dd($field,$op,$value,$status);
-
         $columns = [
         'order_id','invoice_no','invoice_prefix','firstname','lastname','email','telephone','payment_method',
         'shipping_firstname','shipping_lastname','shipping_address_1','shipping_address_2','shipping_city',
@@ -57,6 +55,7 @@ class OrderController extends Controller
 
 
         if($field && $op && $value){
+            dd($field,$op,$value);
             if($op == 'like'){
                 $newValue = "'%$value%'";
             }else{
