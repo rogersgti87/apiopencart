@@ -245,8 +245,35 @@ class OrderController extends Controller
 
         $result = $response->getBody();
 
-        $api_token = json_decode($result);
-        return $api_token;
+        $result_api = json_decode($result);
+
+        if(isset($result_api->success)){
+
+            $data = $request->getContent();
+
+
+            $response_orders = [];
+
+            foreach(json_decode($data , true) as $result){
+
+            $response_history =  Http::asForm()->post($this->config['url_api_oc'].'index.php?route=api/order/history&api_token='.$result_api->api_token.'&store_id=0&order_id='.$result['order_id'],[
+                "order_status_id"   =>  $result['order_status_id'],
+                "comment"           =>  $result['comment'],
+                "notify"            =>  1
+            ]);
+
+            $response_orders[] = $result['order_id'];
+
+        }
+
+        return response()->json(['status' => 'ok', 'data' => ['order_id' => $response_orders]], 200);
+
+        } else {
+            return $result_api;
+        }
+
+
+
 
     }
 
