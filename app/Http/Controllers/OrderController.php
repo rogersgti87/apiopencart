@@ -26,10 +26,10 @@ class OrderController extends Controller
         $data = $request->getContent();
         $result = json_decode($data , true);
 
-        $field  = $result->field;
-        $op     = $result->op;
-        $value  = $result->value;
-        $status = $result->status;
+        $field  = isset($result->field) ? $result->field : null;
+        $op     = isset($result->op) ? $result->op : null;
+        $value  = isset($result->value) ? $result->value : null;
+        $status = isset($result->status) ? $result->status : null;
 
 
         $columns = [
