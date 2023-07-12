@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
 {
@@ -234,10 +235,15 @@ class OrderController extends Controller
     }
 
 
-    public function update(Request $request, string $category_id)
+    public function update(Request $request)
     {
 
+       $response =  Http::post($this->config['url_api_oc'].'/login',[
+            "username"  => $this->config['api_username'],
+            "key"       => $this->config['api_key']
+        ]);
 
+        return $response->body();
 
 
     }

@@ -44,4 +44,5 @@ Route::put('/products-custom',[ProductController::class,'updateCustom']);
 Route::delete('/products/{product_id}',[ProductController::class,'destroy']);
 
 Route::get('/orders',[OrderController::class,'index']);
+Route::put('/orders',[OrderController::class,'update']);
 
