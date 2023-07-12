@@ -238,7 +238,7 @@ class OrderController extends Controller
     public function update(Request $request)
     {
 
-       $response =  Http::post($this->config['url_api_oc'].'index.php?route=api/login',[
+       $response =  Http::asForm()->post($this->config['url_api_oc'].'index.php?route=api/login',[
             "username"  => $this->config['api_username'],
             "key"       => $this->config['api_key']
         ]);
