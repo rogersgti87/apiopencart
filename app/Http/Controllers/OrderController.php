@@ -22,10 +22,14 @@ class OrderController extends Controller
     public function index(Request $request)
     {
 
-        $field  = $request->input('field');
-        $op     = $request->input('op');
-        $value  = $request->input('value');
-        $status = $request->input('status');
+
+        $data = $request->getContent();
+        $result = json_decode($data , true);
+
+        $field  = $result->field;
+        $op     = $result->op;
+        $value  = $result->value;
+        $status = $result->status;
 
 
         $columns = [
