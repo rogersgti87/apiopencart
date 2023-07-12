@@ -243,8 +243,10 @@ class OrderController extends Controller
             "key"       => $this->config['api_key']
         ]);
 
-        dd($response->body());
+        $result = $response->getBody();
 
+        $api_token = json_decode($result);
+        return $api_token;
 
     }
 
