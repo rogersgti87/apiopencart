@@ -74,10 +74,8 @@ class OrderController extends Controller
                         ->orderby('date_modified','DESC')
                         ->paginate(20);
 
-            dd($data);
-
             } else {
-                if(isset($status)){
+                if($status){
                     $newStatus = " order_status_id = '$status'";
                 } else {
                     $newStatus = ' order_status_id > 0';
