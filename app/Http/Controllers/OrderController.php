@@ -59,13 +59,14 @@ class OrderController extends Controller
                 $newValue = "'%$value%'";
             }else{
                 $newValue = "'$value'";
-                dd($field,$op,$value,$newValue);
             }
 
             if(isset($status)){
                 $newStatus = "and order_status_id = '$status'";
+                dd($field,$op,$value,$newStatus,'existe status');
             } else {
                 $newStatus = "and order_status_id > 0";
+                dd($field,$op,$value,$newStatus,'nao existe status');
             }
 
 
