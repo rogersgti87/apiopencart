@@ -218,12 +218,23 @@ class CategoryController extends Controller
 
 		} else {
 
-            DB::table($this->config['db_prefix'].'seo_url')->insert([
-                'store_id'      =>  $this->config['store_id'],
-                'language_id'   =>  $this->config['language_id'],
-                'query'         =>  "category_id=".(int)$category_id,
-                'keyword'       =>  Str::slug($result['name'])
-            ]);
+        $verify_parent_seo_url = DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$result['parent_id'])->first();
+        if($verify_parent_seo_url != null){
+        DB::table($this->config['db_prefix'].'seo_url')->insert([
+            'store_id'      =>  $this->config['store_id'],
+            'language_id'   =>  $this->config['language_id'],
+            'query'         =>  "category_id=".(int)$result['category_id'],
+            'keyword'       =>  Str::slug($verify_parent_seo_url.'-'.$result['name'])
+        ]);
+
+        }else{
+           DB::table($this->config['db_prefix'].'seo_url')->insert([
+            'store_id'      =>  $this->config['store_id'],
+            'language_id'   =>  $this->config['language_id'],
+            'query'         =>  "category_id=".(int)$result['category_id'],
+            'keyword'       =>  Str::slug($result['name'])
+        ]); 
+        }
 
         }
 
@@ -489,7 +500,9 @@ class CategoryController extends Controller
 
 
 
-        DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$result['category_id'])->delete();
+        DB::table($this->config['db_prefix'].'seo_url')->where('query','category_id='.(int)$result['category_id'])->delete();        
+        
+        
 
 		if (isset($result['category_seo_url']) && !empty($result['category_seo_url'])) {
             DB::table($this->config['db_prefix'].'seo_url')->insert([
@@ -501,14 +514,25 @@ class CategoryController extends Controller
 
         } else {
 
+        $verify_parent_seo_url = DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$result['parent_id'])->first();
+        if($verify_parent_seo_url != null){
         DB::table($this->config['db_prefix'].'seo_url')->insert([
             'store_id'      =>  $this->config['store_id'],
             'language_id'   =>  $this->config['language_id'],
             'query'         =>  "category_id=".(int)$result['category_id'],
-            'keyword'       =>  Str::slug($result['name'])
+            'keyword'       =>  Str::slug($verify_parent_seo_url.'-'.$result['name'])
         ]);
 
+        }else{
+           DB::table($this->config['db_prefix'].'seo_url')->insert([
+            'store_id'      =>  $this->config['store_id'],
+            'language_id'   =>  $this->config['language_id'],
+            'query'         =>  "category_id=".(int)$result['category_id'],
+            'keyword'       =>  Str::slug($result['name'])
+        ]); 
         }
+
+    }
 
         $response_categories[] = $result['category_id'];
 
