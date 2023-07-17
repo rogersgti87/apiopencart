@@ -520,7 +520,6 @@ class CategoryController extends Controller
 
         } else {
 
-        $verify_parent_seo_url = DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$result['parent_id'])->first();
 
         if(isset($result['parent_id'])){
             $verify_parent_seo_url = DB::table($this->config['db_prefix'].'category_description')->where('category_id',(int)$result['parent_id'])->first();
