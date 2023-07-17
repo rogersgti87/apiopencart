@@ -229,7 +229,7 @@ class CategoryController extends Controller
         DB::table($this->config['db_prefix'].'seo_url')->insert([
             'store_id'      =>  $this->config['store_id'],
             'language_id'   =>  $this->config['language_id'],
-            'query'         =>  "category_id=".(int)$result['category_id'],
+            'query'         =>  "category_id=".$category_id ,
             'keyword'       =>  Str::slug($verify_parent_seo_url->name.'-'.$result['name'])
         ]);
 
@@ -237,7 +237,7 @@ class CategoryController extends Controller
            DB::table($this->config['db_prefix'].'seo_url')->insert([
             'store_id'      =>  $this->config['store_id'],
             'language_id'   =>  $this->config['language_id'],
-            'query'         =>  "category_id=".(int)$result['category_id'],
+            'query'         =>  "category_id=".(int)$category_id ,
             'keyword'       =>  Str::slug($result['name'])
         ]);
         }
