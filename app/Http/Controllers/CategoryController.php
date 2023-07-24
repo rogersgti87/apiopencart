@@ -343,7 +343,7 @@ class CategoryController extends Controller
             'top'           =>  isset($result['top'])         ? (int)$result['top']         : $category->top,
             //'column'        =>  isset($result['column'])      ? (int)$result['column']      : $category->column,
             'column'        =>  1,
-            'sort_order'    =>  isset($result['sort_order'])  ? (int)$result['sort_order']  : $category->sort_order,
+            'sort_order'    =>  isset($result['sort_order'])  ? (int)$result['sort_order']  : 1,
             'status'        =>  (int)$result['status'],
             'date_modified' =>  NOW()
         ]);
