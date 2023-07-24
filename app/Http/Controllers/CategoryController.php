@@ -341,7 +341,8 @@ class CategoryController extends Controller
         DB::table($this->config['db_prefix'].'category')->where('category_id',$result['category_id'])->update([
             'parent_id'     =>  isset($result['parent_id'])   ? (int)$result['parent_id']   : $category->parent_id,
             'top'           =>  isset($result['top'])         ? (int)$result['top']         : $category->top,
-            'column'        =>  isset($result['column'])      ? (int)$result['column']      : $category->column,
+            //'column'        =>  isset($result['column'])      ? (int)$result['column']      : $category->column,
+            'column'        =>  1,
             'sort_order'    =>  isset($result['sort_order'])  ? (int)$result['sort_order']  : $category->sort_order,
             'status'        =>  (int)$result['status'],
             'date_modified' =>  NOW()
